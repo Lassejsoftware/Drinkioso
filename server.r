@@ -13,10 +13,13 @@ function(input, output, session) {
     withProgress(message = "Calculating map",
                  {
                    score = makedfScore()
+                   print("super cool")
                    beerMap$map <- createMap(score = score, map = cph, alpha = input$mapAlpha)
                  })
   })
   output$beerMap <- renderPlot({
+    print("this is maps!")
+    
     beerMap$map
   })
   #### user stats ####

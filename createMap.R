@@ -4,6 +4,9 @@
 # Create map
 #
 createMap <- function(score, map, alpha = 0.5){
+  #test = data.frame(x = runif(10), y = runif(10) )
+  #gg <- ggplot(data = test) + geom_point(aes(x=x , y= y))
+  #return(gg)
   
   # Only include locations on the map
   lims = attr(map,"bb")
@@ -33,15 +36,22 @@ createMap <- function(score, map, alpha = 0.5){
   BREAKS = c(seq(from = 0.5*min(scoreExp$val), to = 0.5*max(scoreExp$val), length.out = 8),-0.01,0.01)
   BREAKS = round(BREAKS*1000)/1000
   # Make a map.
+  print("making map")
+  # THIS IS SOME CARp!!!!
   gg <- ggmap(map,
               extent = "device", # 
               ylab = "Latitude",
               xlab = "Longitude")
+  #return(gg)
+  tScoreExp <<- scoreExp
+  tgg <<- gg
+  print("fuck that error")
   gg2 <- gg +
     stat_contour(data = scoreExp, breaks = BREAKS,
                  aes(x=x,y=y,z=val, fill = factor(..level..)), geom = "polygon", alpha = alpha) +
     scale_fill_viridis(discrete = T) +
     geom_point(data = score,
                aes(x = lon, y = lat, size = abs(val), color = sign(val))) 
+  ggTest <<- gg2
   gg2
 }
