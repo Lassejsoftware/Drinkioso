@@ -1,0 +1,14 @@
+#
+# run that tools dashboard
+#
+# display.mode="showcase"
+#
+.libPaths("c:/R_libs")
+library(shiny)
+#
+rm(list = ls())
+# options(shiny.reactlog=TRUE) 
+runApp("C:/Users/jqmt/Desktop/jens/drinkioso/")
+#
+#
+setwd("C:/Users/jqmt/Desktop/jens/drinkioso/")
