@@ -266,17 +266,22 @@ y0 =  pi/3
 x0 =  pi/3
 #
 S = -17
-rMat = sqrt((xMat - x0)^2 + (yMat - y0)^2) 
+rMat = sqrt( 0*(xMat - x0[1])^2 + (yMat - y0[1])^2) 
 image(rMat)
 lambda = 0.1
 scoreMat = S*exp(-lambda*rMat)
 image(scoreMat)
-map <- function(x, y, x0, y0, S, lamda){
+
+lims = attr(cph,"bb")
+
+
+
+calcMap <- function(x, y, x0, y0, S, lambda){
   # x,y: grid of map.
   # x0,y0 vectors of bar coords.
   # S bar score.
   # lambda = decay const.
-  if (length(x0) != length(y0) & length(x0) != length(S)){
+  if (length(x0) != length(y0) | length(x0) != length(S)){
     print("All bars should have a individual location and score")
     return()
   }
@@ -285,9 +290,19 @@ map <- function(x, y, x0, y0, S, lamda){
   ny = length(y)
   # generate grid
   g = expand.grid(x = x, y = y)
-  test = c(g$x,g$y)
-  xMat = matrix(data = test, nrow = nx, ncol = ny)
-  yMat = t(xMat)
+  temp = c(g$x)
+  xMat = matrix(data = temp, nrow = nx, ncol = ny)
+  temp = c(g$y)
+  yMat = matrix(data = temp, nrow = nx, ncol = ny)
   #
-  
+  scoreMat = matrix(data = 0, nrow = length(x), ncol = length(y))
+  for (i in 1:length(x0)){
+    rMat = sqrt((xMat - x0[i])^2 + (yMat - y0[i])^2) 
+    if (S[i]>0){
+      scoreMat = scoreMat + round(S[i]*exp(-lambda*rMat))
+    } else {
+      scoreMat = scoreMat + round(S[i]*exp(-lambda*rMat))
+    }
+  }
+  return(scoreMat)
 }

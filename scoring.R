@@ -24,6 +24,9 @@ makedfScore <- function(){
   }
   #
   tot = getVenueCheckIn()
+  
+  # tot$created_at2 = as.Date( substr( tot$created_at,6, 16), format = "%d %b %Y")
+  
   tot = subset(tot, !is.na(tot$venue_name))
   temp = unique(tot[,c("venue_slug","venue_name")])
   aggTot = aggregate(venue_slug ~ user_name + venue_name + venue_id, data = tot, length)
@@ -37,7 +40,7 @@ makedfScore <- function(){
   #
   score = na.omit(spreadTot)
   names(score)[names(score) == "lng"] = "lon"
-  score$val = score$Garbacz + score$hellegskov - score$Slendrick - score$knoe1703
+  score$val = score$Garbacz + score$hellegskov- score$Slendrick - score$knoe1703 - score$camillask
   # saveRDS(spreadTot, file = "testMapDat.rds")
   #
   return(score)

@@ -5,7 +5,7 @@
 # This should be run from a bat file with a timer.
 #
 .libPaths("c:/R_libs")
-path = "C:/Users/jqmt/Desktop/jens/untappd/"
+path = "C:/Users/jqmt/Desktop/jens/drinkioso/"
 setwd(path)
 library(jsonlite)
 library(plyr)

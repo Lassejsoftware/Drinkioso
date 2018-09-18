@@ -18,5 +18,13 @@ library(viridis)
 source("scoring.R")
 source("makedfVenue.R")
 source("createMap.R")
+source("mapHoverFunction.R")
+source("helperFunctions.R")
+
 # Variables
 cph <<- readRDS("maps/cph.rds")
+
+# Start date
+startDate <<- as.Date("01 jan 2018", format = "%d %b %Y")
+
+# as.Date(t3, format = "%d %b %Y")

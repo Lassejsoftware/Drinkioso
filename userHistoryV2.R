@@ -4,9 +4,14 @@
 #
 # Todo: Make some sort of progress indicator. Perhaps branch out checkUser. 
 #
-# dep: source("extra/makeVenueNames.R"); source("extra/unpackCheckins.R"); source("extra/untappdAPI.R"); source("extra/checkForNewVenues.R")
 #
-getUserHist <- function(user = NULL, maxSiz = 20000, wTime = 2*60, overWrite = 0){
+source("extra/makeVenueNames.R")
+source("extra/unpackCheckins.R")
+source("extra/untappdAPI.R")
+source("extra/checkForNewVenues.R")
+source("extra/config.R")
+#
+getUserHist <- function(user = NULL, maxSiz = 350, wTime = 2*60, overWrite = 0){
   if (is.null(user)){print("Specify a user, dummy!");return(NULL)}
   # Setup api.
   method = "user/checkins/"

@@ -33,11 +33,17 @@ dashboardPage(
                        column(4,
                               numericInput(inputId = "mapAlpha", label = "Alpha value for the map", 
                                            value = 0.3, min = 0, max = 1, step = 0.1)
+                              ),
+                       column(4,
+                              numericInput(inputId = "mapSigma", label = "Sigma for smoothing func",
+                                           value = 4, min = 0, max = 5, step = 0.25)
                               )
               ),
               tags$br(),
               fluidRow(
-                plotOutput("beerMap", height = "600px")
+                plotOutput("beerMap", height = "800px",
+                           hover = "mapHover"),
+                uiOutput("mapHoverOut")
               )
       ),
       tabItem("uStats",
