@@ -14,7 +14,8 @@ dashboardPage(
       menuItem("Map", tabName = "map"),
       menuItem("Users stats", tabName = "uStats"),
       menuItem("Team stats", tabName = "tStats"),
-      menuItem("Venue stats", tabName = "vStats")
+      menuItem("Venue stats", tabName = "vStats"),
+      id = "menu"
     )
   ),
   body = dashboardBody(
@@ -42,7 +43,8 @@ dashboardPage(
               tags$br(),
               fluidRow(
                 plotOutput("beerMap", height = "800px",
-                           hover = "mapHover"),
+                           hover = "mapHover",
+                           click = "mapClick"),
                 uiOutput("mapHoverOut")
               )
       ),
@@ -58,7 +60,12 @@ dashboardPage(
       tabItem("tStats",
               fluidRow(
                 h2("there will be stuff here")
-              )
+              )     
+      ),
+      tabItem("vStats",
+              fluidRow(
+                uiOutput(outputId = "venueChoice")
+              )     
       )
     )
   )

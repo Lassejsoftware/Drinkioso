@@ -20,7 +20,7 @@ source("makedfVenue.R")
 source("createMap.R")
 source("mapHoverFunction.R")
 source("helperFunctions.R")
-
+source("extra/makeVenueList.R")
 # Variables
 cph <<- readRDS("maps/cph.rds")
 
