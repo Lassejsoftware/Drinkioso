@@ -3,7 +3,7 @@
 #
 # Create map
 #
-createMap <- function(score, map, alpha = 0.5, sigma = 3){
+createMap <- function(score, map, alpha = 0.5, sigma = 3, lambda = 400){
   outList = list()
   
   calcMap <- function(x, y, x0, y0, S, lambda){
@@ -27,12 +27,9 @@ createMap <- function(score, map, alpha = 0.5, sigma = 3){
     #
     scoreMat = matrix(data = 0, nrow = length(x), ncol = length(y))
     for (i in 1:length(x0)){
-      rMat = sqrt((xMat - x0[i])^2 + (yMat - y0[i])^2) 
-      if (S[i]>0){
-        scoreMat = scoreMat + round(S[i]*exp(-lambda*rMat))
-      } else {
-        scoreMat = scoreMat + round(S[i]*exp(-lambda*rMat))
-      }
+      rMat = sqrt((xMat - x0[i])^2 + (yMat - y0[i])^2)
+      scoreMat = scoreMat + S[i]*exp(-lambda*rMat)
+      #scoreMat = scoreMat + S[i]*exp(-lambda*rMat^2)
     }
     return(scoreMat)
   }
@@ -45,13 +42,13 @@ createMap <- function(score, map, alpha = 0.5, sigma = 3){
   # Extend a bit for reducing artifacts
   epsi = 0.001
   N = dim(score)[1]
-  score[N+1,c("lon","lat","val")] <- c(lims$ll.lon+epsi,lims$ll.lat+epsi,0)
-  score[N+2,c("lon","lat","val")] <- c(lims$ll.lon+epsi,lims$ur.lat-epsi,0)
-  score[N+3,c("lon","lat","val")] <- c(lims$ur.lon-epsi,lims$ll.lat+epsi,0)
-  score[N+4,c("lon","lat","val")] <- c(lims$ur.lon-epsi,lims$ur.lat-epsi,0)
-  
+  score[N+1,c("lon","lat","val")] <- c(lims$ll.lon+epsi,lims$ll.lat-epsi,0)
+  score[N+2,c("lon","lat","val")] <- c(lims$ll.lon+epsi,lims$ur.lat+epsi,0)
+  score[N+3,c("lon","lat","val")] <- c(lims$ur.lon-epsi,lims$ll.lat-epsi,0)
+  score[N+4,c("lon","lat","val")] <- c(lims$ur.lon-epsi,lims$ur.lat+epsi,0)
+
   # make a map image
-  nx = 1024
+  nx = 128
   x = seq(min(score$lon), max(score$lon), length.out = nx)
   y = seq(min(score$lat), max(score$lat), length.out = nx)
   x0 = score$lon
@@ -62,18 +59,20 @@ createMap <- function(score, map, alpha = 0.5, sigma = 3){
                      x0=x0,
                      y0=y0,
                      S=S,
-                     lambda = 400)
+                     lambda = lambda)
   
+  outList$mapImage = mapImage
   # Make smoothed score df
   scoreExp <- expand.grid(x = x, y = y)
   scoreExp$val <- as.vector(mapImage)
   scoreExp <- na.omit(scoreExp)
-  tscoreExp <<- scoreExp
+  #
+  outList$scoreExp <- scoreExp
   # Calculate contour lines 
   # BREAKS = c(seq(from = 0.5*min(scoreExp$val), to = 0.5*max(scoreExp$val), length.out = 8),-0.01,0.01)
   # BREAKS = round(BREAKS*1000)/1000
   
-  BREAKS = c(seq(-50,50,by=10),-0.1,0.1)
+  BREAKS = c(seq(-40,40,by=10),-5,5,-1,1)
   
   # Make a map.
   gg <- ggmap(map,

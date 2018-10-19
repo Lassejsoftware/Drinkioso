@@ -17,7 +17,7 @@ library(viridis)
 # Functions
 source("scoring.R")
 source("makedfVenue.R")
-source("createMap.R")
+source("createMapV2.R")
 source("mapHoverFunction.R")
 source("helperFunctions.R")
 source("extra/makeVenueList.R")

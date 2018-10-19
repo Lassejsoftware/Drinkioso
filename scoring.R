@@ -28,10 +28,12 @@ makedfScore <- function(){
   # tot$created_at2 = as.Date( substr( tot$created_at,6, 16), format = "%d %b %Y")
   
   tot = subset(tot, !is.na(tot$venue_name))
-  temp = unique(tot[,c("venue_slug","venue_name")])
-  aggTot = aggregate(venue_slug ~ user_name + venue_name + venue_id, data = tot, length)
-  names(aggTot)[names(aggTot) == "venue_slug"] <- "count"
-  aggTot = merge(aggTot, temp, by = "venue_name", all.x = T)
+
+  temp = unique(tot[,c("venue_id","venue_name")])
+  temp = temp[!duplicated(temp$venue_id),]
+  aggTot = aggregate(list(count = tot$venue_id), by = list(user_name = tot$user_name,
+                                                           venue_id = tot$venue_id), length)
+  aggTot = merge(aggTot, temp, by = "venue_id", all.x = T)
   spreadTot = spread(aggTot, key = user_name, value = count)
   spreadTot[is.na(spreadTot)] = 0
   #

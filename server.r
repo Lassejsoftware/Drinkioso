@@ -14,8 +14,11 @@ function(input, output, session) {
                  {
                    score = makedfScore()
                    mapList <<- createMap(score = score, map = cph, 
-                                         alpha = input$mapAlpha, 
-                                         sigma = input$mapSigma)
+                                         #alpha = input$mapAlpha, 
+                                         #sigma = input$mapSigma
+                                         lambda = 500
+                                         )
+                   
                    beerMap$map <- mapList$plot
                    beerMap$score <- score
                  })

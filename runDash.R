@@ -14,4 +14,3 @@ runApp("C:/Users/jqmt/Desktop/jens/drinkioso/")
 #
 #
 setwd("C:/Users/jqmt/Desktop/jens/drinkioso/")
-setwd("C:/Users/Ivan/Documents/DEVPROJECTS/Lassejsoftware/drinkioso1/")
