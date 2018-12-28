@@ -4,7 +4,7 @@
 # Spits out a dataframe with is, slug and name
 #
 makeVenueNames <- function(dat, na_rm = 1){
-  if (sum(c("venue_id") %in% names(dat)) != 2 ){
+  if (sum(c("venue_id") %in% names(dat)) != 1 ){
     print("Input data frame does not have the required variables!")
     return(NULL)
   }

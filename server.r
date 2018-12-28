@@ -4,51 +4,48 @@
 # server side of drinkioso v0.1 
 #
 function(input, output, session) {
-  beerMap <- reactiveValues()
+  beerReact <- reactiveValues()
   #### Welcome page ####
   
   #### map ####
   observeEvent(input$calcMap,{
-    req(input$mapAlpha)
+    req(input$mapLambda)
     withProgress(message = "Calculating map",
                  {
                    score = makedfScore()
-                   mapList <<- createMap(score = score, map = cph, 
-                                         #alpha = input$mapAlpha, 
-                                         #sigma = input$mapSigma
-                                         lambda = 500
+                   beerList <- createMap(score = score,
+                                         map = cph, 
+                                         lambda = input$mapLambda
                                          )
-                   
-                   beerMap$map <- mapList$plot
-                   beerMap$score <- score
+                   beerReact$mapList = beerList
                  })
   })
   
   # Make the plot
-  output$beerMap <- renderPlot({
-    beerMap$map
+  output$beerMap <- renderLeaflet({
+    req(beerReact$mapList)
+    beerList <- beerReact$mapList
+    BREAKS = c(seq(-40,40,by=10),-5,5,1,1,-0.1,0.1)
+    CL <- contourLines(unique(beerList$scoreExp$x) , unique(beerList$scoreExp$y) , beerList$mapImage, levels = BREAKS)
+    
+    ## EXTRACT CONTOUR LINE LEVELS
+    LEVS <- as.factor(sapply(CL, `[[`, "level"))
+    NLEV <- length(levels(LEVS))
+    
+    ## CONVERT CONTOUR LINES TO POLYGONS
+    pgons <- lapply(1:length(CL), function(i)
+      Polygons(list(Polygon(cbind(CL[[i]]$x, CL[[i]]$y))), ID=i))
+    spgons = SpatialPolygons(pgons)
+    
+    # With bars sommer::jet.colors
+    leaflet(spgons) %>% addTiles() %>%
+      addPolygons(color = sommer::jet.colors(NLEV, NULL)[LEVS], fillOpacity = input$mapAlpha) %>%
+      # addPolygons(color = heat.colors(NLEV, NULL)[LEVS], fillOpacity = input$mapAlpha) %>%
+      addCircles(lng = beerList$score$lon, lat = beerList$score$lat,
+                 radius = abs(beerList$score$val), opacity = 1, col = beerList$score$col, fillOpacity = 1, label = lapply(beerList$score$label,HTML),
+                 labelOptions = list(textsize = "15px")) 
   })
   
-  # Map hover
-  output$mapHoverOut <- renderUI({
-    mapHoverFunc(input$mapHover, data = mapList$score)
-  })
-  
-  # Map clicker
-  observeEvent(input$mapClick,{
-    print("Map was clicked")
-    points <- nearPoints(beerMap$score, input$mapClick, 
-                         threshold = 10,
-                         maxpoints = 1,
-                         xvar = "lon",
-                         yvar = "lat")
-    if (dim(points)[1] == 1){
-      print(points)
-      updateTabItems(session, inputId = "menu", selected = "vStats")
-      updateSelectizeInput(session, inputId = "venueNames",
-                           selected = points$venue_name)
-    }
-  })
   #### user stats ####
   output$userChoice <- renderUI({
     users = dir("checkinHist")
@@ -60,6 +57,7 @@ function(input, output, session) {
   # Update user data
   observeEvent(input$updateUsers,{
     print("Updating users.")
+    print("Well not really.")
   })
   
   #### team stats ####
@@ -67,9 +65,19 @@ function(input, output, session) {
   #### venue stats ####
   
   output$venueChoice <- renderUI({
-    venueNames <- makeVenueList()
+    venueNames <- makeVenueList(map = cph)
     selectizeInput(inputId = "venueNames", 
                    label = "Venues",
-                   choices = venueNames$names)
+                   choices = sort(venueNames$names))
   })
+  
+  #### Admin panel ####
+  output$adminSwitch <- reactive({
+    if (input$adminPass == "storepatter"){
+      return(TRUE)
+    } else {
+      return(FALSE)
+    }
+  })
+  outputOptions(output, 'adminSwitch' , suspendWhenHidden=FALSE)
 }

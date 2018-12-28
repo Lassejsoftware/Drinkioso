@@ -42,8 +42,46 @@ makedfScore <- function(){
   #
   score = na.omit(spreadTot)
   names(score)[names(score) == "lng"] = "lon"
-  score$val = score$Garbacz + score$hellegskov- score$Slendrick - score$knoe1703 - score$camillask
-  # saveRDS(spreadTot, file = "testMapDat.rds")
+  
+  users = dir("checkinHist/")
+  users = gsub("\\..*", "", users)
+  val = vector(mode = "numeric", length = nrow(score))
+  for (i in users){
+    if (i %in% names(score)){
+      const = getTeam(i,opts = "num")
+      val = score[[i]]*const + val
+    }
+  }
+  score$val = val
+  
+  # Add team colours
+  score$col = getTeam(val = score$val)
+  # score$col = "blue"
+  # score$col[score$val>0] = "green"
   #
   return(score)
 }
+
+getTeam <- function(user = NULL, opts = NULL, val = NULL){
+  if (!is.null(val)){
+    team = ifelse(test = val>0, yes = "green", no = "blue")
+    return(team)
+  }
+  if (is.null(user) & is.null(opts)){
+    return()
+  }
+  teamList = list(
+    blue = c("Slendrick", "knoe1703", "camillask"),
+    green = c("Garbacz", "hellegskov")
+  )
+  if (identical(opts, "teams")){
+    return(teamList)
+  }
+  
+  team = useDict(user, teamList)
+  if (identical(opts,"num")){
+    team = ifelse(test = team == "green", yes = 1, no = -1)
+  } 
+  return(team)
+}
+

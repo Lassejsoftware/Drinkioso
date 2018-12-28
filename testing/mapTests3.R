@@ -10,7 +10,8 @@ library("leaflet")
 library("sp")
 #library("rgdal")
 #library("KernSmooth")
-#library("tidyr")
+library("tidyr")
+library(htmltools)
 #
 inurl <- "https://data.cityofchicago.org/api/views/22s8-eq8h/rows.csv?accessType=DOWNLOAD"
 infile <- "testing/mvthefts.csv"
@@ -48,7 +49,7 @@ source("createMapV3.R")
 cph = readRDS("maps/cph.rds")
 score = makedfScore()
 #
-mapList = createMap(score,cph, lambda = 650)
+mapList = createMap(score, cph, lambda = 650)
 #
 score = mapList$score
 score$col = "blue"
@@ -86,7 +87,8 @@ spgons = SpatialPolygons(pgons)
 
 # With bars
 leaflet(spgons) %>% addTiles() %>%
-  addPolygons(color = heat.colors(NLEV, NULL)[LEVS], fillOpacity = 0.5) %>%
+  # addPolygons(color = heat.colors(NLEV, NULL)[LEVS], fillOpacity = 0.5) %>%
+  addPolygons(color = sommer::jet.colors(NLEV, NULL)[LEVS], fillOpacity = 0.5) %>%
   addCircles(lng = score$lon, lat = score$lat,
              radius = abs(score$val), opacity = 1, col = score$col, fillOpacity = 1, label = lapply(score$label,HTML),
              labelOptions = list(textsize = "15px")) 

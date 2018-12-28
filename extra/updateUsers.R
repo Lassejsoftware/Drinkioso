@@ -5,6 +5,7 @@
 # This should be run from a bat file with a timer.
 #
 .libPaths("c:/R_libs")
+
 path = "C:/Users/jqmt/Desktop/jens/drinkioso/"
 setwd(path)
 library(jsonlite)
@@ -71,5 +72,5 @@ for (i in users){
   }
   #
   print("getting new venues")
-  checkForNewVenues(cHist)
+  checkForNewVenues(cHist, wTime = 10)
 }

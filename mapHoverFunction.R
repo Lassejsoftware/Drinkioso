@@ -16,6 +16,7 @@ mapHoverFunc <- function(hover, data = NULL){
                   "left:", left_px + 40, "px; top:", top_px + 40, "px;")
   #
   point <- nearPoints(data, hover, xvar = "lon", yvar = "lat", threshold = 5, maxpoints = 1, addDist = TRUE)
+  tpoint <<- point
   if (dim(point)[1] == 0 ){return()} # Nothing nearby
   team = ifelse(point$val>0, "Yellow", "Blue")
   venue = point$venue_name
@@ -24,12 +25,13 @@ mapHoverFunc <- function(hover, data = NULL){
   users = gsub("\\..*", "", users)
   inds = which(names(point) %in% users)
   drinker = names(which.max(point[,inds]))
+  dTeam = "bleh"
   num = point[inds[ which.max(point[,inds])]]
   wellPanel(
     style = style,
     p(HTML(paste0("<b> Venue: </b>", venue, " owned by team <b>", team,  "</b> <br/>",
                   "<b> Venue score is:  </b>", score , "<br/>",
-                  "<b> Best team player: </b>", drinker, " with ", num, " beers!"
+                  "<b> Best player: </b>", drinker, " from team ", dTeam," with ", num, " beers!"
                   )
            )
       )
