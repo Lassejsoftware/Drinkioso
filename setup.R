@@ -26,6 +26,9 @@ source("createMapV4.R")
 source("mapHoverFunction.R")
 source("helperFunctions.R")
 source("extra/makeVenueList.R")
+source("extra/getUsers.R")
+source("userHistoryV3.R")
+
 # Variables
 cph <<- readRDS("maps/cph.rds")
 

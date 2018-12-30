@@ -12,6 +12,4 @@ rm(list = ls())
 
 runApp("C:/Users/jqmt/Desktop/jens/drinkioso/")
 
-#
-#
 setwd("C:/Users/jqmt/Desktop/jens/drinkioso/")

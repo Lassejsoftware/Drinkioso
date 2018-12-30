@@ -55,7 +55,6 @@ dashboardPage(
       ),
       tabItem("uStats",
               fluidRow(
-                actionButton(inputId = "updateUsers", label = "Update user data")
               ),
               tags$br(),
               fluidRow(
@@ -71,7 +70,11 @@ dashboardPage(
               fluidRow(
                 column(12,
                        fluidRow(
-                         tableOutput(outputId = "easyPick" )
+                         box(title = "Easy pickings! These bars have no owner or only a very small lead:", width = 10,
+                          div(style = 'overflow-x: scroll', 
+                              DT::dataTableOutput(outputId = "easyPick")
+                              )
+                         )
                        ),
                        fluidRow(
                          column(4,
@@ -90,7 +93,15 @@ dashboardPage(
                 tags$br(),
                 fluidRow(
                   conditionalPanel("output.adminSwitch == true",
-                    h4("Nothing here!")
+                                   fluidRow(
+                                     column(4,
+                                            uiOutput("userChoiceAdmin")
+                                            ),
+                                     column(2,
+                                            actionButton(inputId = "updateUsers", label = "Update user data")
+                                            )
+                                     
+                                   )
                   )
                 )
               )

@@ -43,8 +43,7 @@ makedfScore <- function(){
   score = na.omit(spreadTot)
   names(score)[names(score) == "lng"] = "lon"
   
-  users = dir("checkinHist/")
-  users = gsub("\\..*", "", users)
+  users = getUsers()
   val = vector(mode = "numeric", length = nrow(score))
   for (i in users){
     if (i %in% names(score)){

@@ -83,16 +83,9 @@ function(input, output, session) {
   
   #### user stats ####
   output$userChoice <- renderUI({
-    users = dir("checkinHist")
-    users = gsub(pattern = "\\..*", replacement = "", x = users)
+    users = getUsers()
     selectizeInput(inputId = "users", label = "Choose a user",
                    choices = users)
-  })
-  
-  # Update user data
-  observeEvent(input$updateUsers,{
-    print("Updating users.")
-    print("Well not really.")
   })
   
   #### team stats ####
@@ -106,21 +99,20 @@ function(input, output, session) {
                    choices = sort(venueNames$names))
   })
   
-  output$easyPick <- renderTable({
-    req(beerReact)
+  output$easyPick <- DT::renderDataTable({
     score = beerReact$mapList$score
-    users = dir("checkinHist/")
-    users = gsub("\\..*", "", users)
+    users = getUsers()
     users = users[users %in% names(score)]
-    dfOut = subset(score, tolower(score$col) == "black" & score$isBar == T, select = c("venue_name", users))
+    dfOut = subset(score, abs(score$val)<2 & score$isBar == T, select = c("venue_name", "val","col", users))
+    vec = c(val = "Score", col = "Team", venue_name = "Venue")
+    dfOut = plyr::rename(dfOut,vec)
     # FIX THIS SHIT!
     for (i in users){
       dfOut[[i]] = dfOut[[i]]*getTeam(i,opts="num")
     }
+    dfOut = dfOut[order(abs(dfOut$Score)),]
     return(dfOut)
-  }, 
-  caption = "<b> <span style='color:#000000'> Easy pickings! <br/> Nobody owns these bars: </b>",
-  caption.placement = getOption("xtable.caption.placement", "top"))
+  }, rownames = F)
   
   #### Admin panel ####
   output$adminSwitch <- reactive({
@@ -131,4 +123,39 @@ function(input, output, session) {
     }
   })
   outputOptions(output, 'adminSwitch' , suspendWhenHidden=FALSE)
+  
+  output$userChoiceAdmin <- renderUI({
+    users <- getUsers()
+    selectizeInput(inputId = "usersAdmin", label = "Choose a user to update",
+                   choices = users,
+                   multiple = F,
+                   options = list(
+                     create = T, # Possible to create new user
+                     persist = T # Not possible to choose the new option as a usual option
+                   ))
+  })
+  
+  # Update user data
+  observeEvent(input$updateUsers,{
+    req(input$usersAdmin)
+    users = getUsers()
+    if (input$usersAdmin %in% users){
+      print("Updating user.")
+      withProgress(message = "Getting user history", value = 1, {
+        getUserHist(user = input$usersAdmin, wTime = 10)
+      })
+    } else {
+      print("Creating user.")
+      showModal(modalDialog(
+        fluidRow(h2(paste0("The user:", input$usersAdmin," will be created")))
+      )
+      )
+      withProgress(message = "Creating user in database", value = 1, {
+        getUserHist(user = input$usersAdmin, wTime = 10)
+      })
+    }
+    
+  })
+  
+  
 }
