@@ -55,11 +55,25 @@ dashboardPage(
       ),
       tabItem("uStats",
               fluidRow(
-              ),
-              tags$br(),
-              fluidRow(
                 uiOutput("userChoice")
-              )
+              ),
+              br(),
+              fluidRow(
+                box(title = "Trophies", width = 10,
+                    div(title = "Here there will be stuff",
+                        style = 'overflow-x: scroll',
+                        h3("Some trophies")
+                        )
+                    )
+              ), 
+              br(),
+              fluidRow(column(4,
+                              uiOutput("userPlotChoice")
+                              ),
+                       column(8,
+                              plotOutput("userPlot")
+                              )
+                       )
       ),
       tabItem("tStats",
               fluidRow(
@@ -94,12 +108,24 @@ dashboardPage(
                 fluidRow(
                   conditionalPanel("output.adminSwitch == true",
                                    fluidRow(
-                                     column(4,
-                                            uiOutput("userChoiceAdmin")
-                                            ),
-                                     column(2,
-                                            actionButton(inputId = "updateUsers", label = "Update user data")
-                                            )
+                                     box(title = "User related", width = 10,
+                                       column(4,
+                                              uiOutput("userChoiceAdmin")
+                                       ),
+                                       column(2,
+                                              actionButton(inputId = "updateUsers", label = "Update user data")
+                                       )
+                                     ),
+                                     box(title = "Venue related", width = 10),
+                                     box(title = "Trophy related", width = 10,
+                                         column(4,
+                                                uiOutput("trophies")
+                                                ),
+                                         column(2,
+                                                actionButton(inputId = "trophyRecalc", label = "Recalculate trophy")
+                                                )
+                                         ),
+                                     box(title = "Scoring related", width = 10)
                                      
                                    )
                   )

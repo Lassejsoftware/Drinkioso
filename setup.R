@@ -8,9 +8,9 @@ library(tidyr)
 library(shinydashboard)
 library(shiny)
 library(shinyWidgets)
+library(ggplot2)
 
 # Map
-# library(ggplot2)
 # library(ggmap)
 # library(fields)
 # library(spatialfil)
@@ -28,6 +28,13 @@ source("helperFunctions.R")
 source("extra/makeVenueList.R")
 source("extra/getUsers.R")
 source("userHistoryV3.R")
+
+# user stats
+source("userStats/userPlotWrapper.R")
+source("userStats/userHist.R")
+source("userStats/userTimeline.R")
+source("userStats/trophyWrapper.R")
+
 
 # Variables
 cph <<- readRDS("maps/cph.rds")

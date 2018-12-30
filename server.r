@@ -5,6 +5,7 @@
 #
 function(input, output, session) {
   beerReact <- reactiveValues()
+  admin <- reactiveValues()
   #### Welcome page ####
   
   output$logo <- renderImage({
@@ -19,7 +20,7 @@ function(input, output, session) {
   }, deleteFile = F)
   
   #### map ####
-  observeEvent(input$calcMap,{
+  observeEvent(c(input$calcMap, admin$calc),{
     req(input$mapLambda)
     withProgress(message = "Calculating map", value = 1,
                  {
@@ -84,8 +85,19 @@ function(input, output, session) {
   #### user stats ####
   output$userChoice <- renderUI({
     users = getUsers()
-    selectizeInput(inputId = "users", label = "Choose a user",
+    selectizeInput(inputId = "user", label = "Choose a user",
                    choices = users)
+  })
+  
+  output$userPlotChoice <- renderUI({
+    selectizeInput(inputId = "userPlotChoice", label = "Choose a plot",
+                   choices = userPlotWrapper(opts = "plots")
+                   )
+  })
+  
+  output$userPlot <- renderPlot({
+    req(input$user, input$userPlotChoice)
+    userPlotWrapper(user = input$user, plotType = input$userPlotChoice)
   })
   
   #### team stats ####
@@ -100,6 +112,8 @@ function(input, output, session) {
   })
   
   output$easyPick <- DT::renderDataTable({
+    req(beerReact$mapList$score)
+    
     score = beerReact$mapList$score
     users = getUsers()
     users = users[users %in% names(score)]
@@ -116,7 +130,7 @@ function(input, output, session) {
   
   #### Admin panel ####
   output$adminSwitch <- reactive({
-    if (input$adminPass == "storepatter"){
+    if (input$adminPass == "store patter"){
       return(TRUE)
     } else {
       return(FALSE)
@@ -124,9 +138,10 @@ function(input, output, session) {
   })
   outputOptions(output, 'adminSwitch' , suspendWhenHidden=FALSE)
   
+  ## User related
   output$userChoiceAdmin <- renderUI({
     users <- getUsers()
-    selectizeInput(inputId = "usersAdmin", label = "Choose a user to update",
+    selectizeInput(inputId = "usersAdmin", label = "Choose a user to update or add new user",
                    choices = users,
                    multiple = F,
                    options = list(
@@ -155,6 +170,14 @@ function(input, output, session) {
       })
     }
     
+  })
+  
+  ## Trophy related
+  output$trophies <- renderUI({
+    selectizeInput(inputId = "trophyCalc", label = "Choose a trophy to update",
+                   choices = trophyWrapper(opts = "trophies"),
+                   multiple = F
+    )
   })
   
   
