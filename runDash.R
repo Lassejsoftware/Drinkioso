@@ -11,6 +11,7 @@ rm(list = ls())
 # runApp("C:/Users/Ivan/Documents/DEVPROJECTS/Lassejsoftware/drinkioso1/")
 
 runApp("C:/Users/jqmt/Desktop/jens/drinkioso/")
+
 #
 #
 setwd("C:/Users/jqmt/Desktop/jens/drinkioso/")

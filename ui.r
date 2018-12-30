@@ -11,7 +11,7 @@ dashboardPage(
   sidebar = dashboardSidebar(
     sidebarMenu(
       menuItem("Welcome page", tabName = "welcome"),
-      menuItem("Map", tabName = "map"),
+      menuItem("Map", tabName = "map", selected = T),
       menuItem("Users stats", tabName = "uStats"),
       menuItem("Team stats", tabName = "tStats"),
       menuItem("Venue stats", tabName = "vStats"),
@@ -23,18 +23,24 @@ dashboardPage(
     tabItems(
       tabItem("welcome",
               fluidRow(
-                h2("This page is for a general introduction"),
-                box(title = "Rules", 
-                    h2("General rules"))
+                div(title = "test",
+                    imageOutput("logo")
+                    )
+                # box(title = "Rules",
+                #   h2("General rules"))
               )
       ),
       tabItem("map",
               fluidRow(column(3,
-                              actionButton(inputId = "calcMap", label = "Calculate map")
+                              actionButton(inputId = "calcMap", label = "Calculate map"),
+                              br(),
+                              checkboxGroupInput(inputId = "mapTeams", label = "Show teams on map",
+                                                 choices = proper(names(getTeam(opts="teams"))),
+                                                 selected = proper(names(getTeam(opts="teams")))) 
                               ),
                        column(4,
                               numericInput(inputId = "mapAlpha", label = "Alpha value for the map", 
-                                           value = 0.5, min = 0, max = 1, step = 0.1)
+                                           value = 0.3, min = 0, max = 1, step = 0.1)
                               ),
                        column(5,
                               numericInput(inputId = "mapLambda", label = "Decay constant for smoothing function",
@@ -63,8 +69,15 @@ dashboardPage(
       ),
       tabItem("vStats",
               fluidRow(
-                column(4,
-                       uiOutput(outputId = "venueChoice")
+                column(12,
+                       fluidRow(
+                         tableOutput(outputId = "easyPick" )
+                       ),
+                       fluidRow(
+                         column(4,
+                                uiOutput(outputId = "venueChoice")
+                         )
+                       )
                        )
               )     
       ),

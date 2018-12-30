@@ -5,9 +5,6 @@ account: lassejsoftware
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 445165
-bundleId: 1585686
+bundleId: 1788493
 url: https://lassejsoftware.shinyapps.io/drinkioso/
-when: 1536934074.18404
-asMultiple: FALSE
-asStatic: FALSE
-ignoredFiles: mapTests.R|mapTests2.R|runDash.R|shinyAppIOSetup.R|tempSetup.R|test.R|testMapDat.rds|updateUsers.R|bc/checkinHist/Garbacz.rds|bc/checkinHist/hellegskov.rds|bc/checkinHist/Slendrick.rds|old/makeVenueNames.R|old/updateUsers.R|old/userHistory.R|old/userHistoryV0.R
+when: 1546094078.58816

@@ -5,7 +5,7 @@
 #
 # map is basically only for limiting georgraphy of bars.
 #
-createMap <- function(score, map, lambda = 650){
+createMap <- function(score, map, lambda = 650, noTeam = NULL){
   outList = list()
   
   calcMap <- function(x, y, x0, y0, S, lambda){
@@ -56,9 +56,18 @@ createMap <- function(score, map, lambda = 650){
   
   label = paste0("<b> Venue: </b>", score$venue_name, " owned by team <b>", team,  "</b> <br/>",
                  "<b> Venue score is:  </b>", abs(score$val) , "<br/>",
-                 "<b> Best team player: </b>", drinker, " from team <b>", dTeam, "</b> with ", num, " beers!"
+                 "<b> Greatest beer drinker: </b>", drinker, " from team <b>", dTeam, "</b> with ", num, " beers!"
+  )
+  vec = grep("Black", label)
+  label[vec] = paste0("<b> Venue: </b>", score$venue_name[vec], " is not owned by any team! <b>Go drink some beers!</b> <br/>",
+                      "<b> Greatest beer drinker: </b>", drinker[vec], " from team <b>", dTeam[vec], "</b> with ", num[vec], " beers!"
   )
   score$label = label
+  
+  # Will mess up the map!
+  if (!is.null(noTeam)){
+    score$val[vec] = noTeam
+  }
   outList$score = score
   # make a map image
   nx = 256
@@ -77,8 +86,9 @@ createMap <- function(score, map, lambda = 650){
                      S=S,
                      lambda = lambda)
   
-  epsi = 0.05
+  epsi = 0.01#0.05
   mapImage[abs(mapImage)<epsi] = 0
+  
   outList$mapImage = mapImage
   
   # Make smoothed score df
