@@ -4,8 +4,12 @@
 # server side of drinkioso v0.1 
 #
 function(input, output, session) {
+  # Reactives for different features.
+  admin <- reactiveValues(start = as.POSIXct("01 jan 2018", format = "%d %b %Y"),
+                          score = makedfScore(startDate = as.POSIXct("01 jan 2018", format = "%d %b %Y")),
+                          calc = 1
+                          )
   beerReact <- reactiveValues()
-  admin <- reactiveValues()
   #### Welcome page ####
   
   output$logo <- renderImage({
@@ -24,8 +28,7 @@ function(input, output, session) {
     req(input$mapLambda)
     withProgress(message = "Calculating map", value = 1,
                  {
-                   score = makedfScore()
-                   beerList <- createMap(score = score,
+                   beerList <- createMap(score = admin$score,
                                          map = cph, 
                                          lambda = input$mapLambda
                                          )
@@ -37,7 +40,6 @@ function(input, output, session) {
   output$beerMap <- renderLeaflet({
     req(beerReact$mapList)
     beerList <- beerReact$mapList
-    tBeerList <<- beerList
     BREAKS = c(seq(-40, 40, by=10),-5,5,-1,1,-0.1,0.1) # 
     CL <- contourLines(unique(beerList$scoreExp$x) , unique(beerList$scoreExp$y) , beerList$mapImage, levels = BREAKS)
     levCL = sapply(CL, function(cs){cs$level})
@@ -97,10 +99,23 @@ function(input, output, session) {
   
   output$userPlot <- renderPlot({
     req(input$user, input$userPlotChoice)
-    userPlotWrapper(user = input$user, plotType = input$userPlotChoice)
+    userPlotWrapper(user = input$user, plotType = input$userPlotChoice, startDate = admin$start)
   })
   
   #### team stats ####
+  
+  output$teamPlotChoice <- renderUI({
+    selectizeInput(inputId = "teamPlotChoice", label = "Choose a plot",
+                   choices = teamPlotWrapper(opts = "plots")
+    )
+  })
+  
+  output$teamPlot <- renderPlot({
+    req(input$teamPlotChoice)
+    teamPlotWrapper(plotType = input$teamPlotChoice, startDate = admin$start, score = admin$score)
+  })
+  
+  
   
   #### venue stats ####
   
@@ -115,18 +130,22 @@ function(input, output, session) {
     req(beerReact$mapList$score)
     
     score = beerReact$mapList$score
-    users = getUsers()
-    users = users[users %in% names(score)]
-    dfOut = subset(score, abs(score$val)<2 & score$isBar == T, select = c("venue_name", "val","col", users))
-    vec = c(val = "Score", col = "Team", venue_name = "Venue")
+    # users = getUsers()
+    # users = users[users %in% names(score)]
+    dfOut = subset(score, abs(score$val)<2 & score$isBar == T, select = c("venue_name", "val","col") ) # ,users
+    dfOut$col = proper(dfOut$col)
+    dfOut$col[dfOut$val == 0] = "No owner"
+    dfOut = dfOut[order(abs(dfOut$val)),]
+    dfOut$val = abs(dfOut$val) + 1
+    
+    vec = c(val = "Beers needed for dominance", col = "Owner", venue_name = "Venue")
     dfOut = plyr::rename(dfOut,vec)
-    # FIX THIS SHIT!
-    for (i in users){
-      dfOut[[i]] = dfOut[[i]]*getTeam(i,opts="num")
-    }
-    dfOut = dfOut[order(abs(dfOut$Score)),]
-    return(dfOut)
-  }, rownames = F)
+    datatable(dfOut, rownames = F) %>% formatStyle(
+      "Owner", 
+      #target = 'row',
+      backgroundColor = styleEqual(c("Blue", "Red"), c("lightblue", "#ff3232"))
+    )
+  }) 
   
   #### Admin panel ####
   output$adminSwitch <- reactive({
@@ -180,5 +199,22 @@ function(input, output, session) {
     )
   })
   
+  ## Scoring related
+  output$startDate = renderUI({
+    sliderInput(inputId = "startDate", 
+                label = "Start date for Drinkioso",
+                min = as.POSIXct("01 jan 2018", format = "%d %b %Y"),
+                max = as.POSIXct(Sys.Date(), format = "%Y-%b-%d"), 
+                value = as.POSIXct("01 jan 2018", format = "%d %b %Y"),
+                step = 14)
+  })
+  
+  observeEvent(input$startDate,{
+    if (!is.null(input$startDate)){
+      admin$start = input$startDate
+      admin$score = makedfScore(startDate = admin$start)
+      admin$calc = admin$calc + 1
+    }
+  })
   
 }

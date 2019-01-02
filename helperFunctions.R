@@ -36,3 +36,29 @@ useDict <- function(name,dict){
   out = gsub(pattern = "\\\\b",replacement = "",out)
   return(out)
 }
+
+# translate untappd time to R-time
+untappd2POSIXct <- function(tVec){
+  time = as.character(tVec)
+  time = substr(time,6,25)
+  if (is.na(strptime("01 oct","%d %b"))){
+    time = gsub("oct", "okt",time,ignore.case = T)
+    time = gsub("may", "maj",time,ignore.case = T)
+  }
+  time = as.POSIXct(strptime(time, "%d %b %Y %H:%M:%S")) 
+  return(time)
+}
+
+# Count unique
+# todo:
+count_unique <- function(df, var = NULL){
+  if (is.null(ncol(df))){
+    agg = aggregate(list(N = df), by = list(name = df), length) %>% arrange(.,desc(N))
+    return(agg)
+  }
+  if (ncol(df)>1){
+    agg = aggregate(list(N = df[[var]]), by = list(temp = df[[var]]), length) %>% arrange(.,desc(N))
+    names(agg)[1] = var
+    return(agg)
+  } 
+}

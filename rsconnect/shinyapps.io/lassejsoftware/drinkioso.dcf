@@ -5,6 +5,6 @@ account: lassejsoftware
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 445165
-bundleId: 1789545
+bundleId: 1793347
 url: https://lassejsoftware.shinyapps.io/drinkioso/
-when: 1546181601.55215
+when: 1546446976.32742

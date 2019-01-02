@@ -15,9 +15,17 @@ makedfVenue <- function(){
     dfVenue[cc, "total_user_count"] = temp$stats$total_user_count
     dfVenue[cc, "lat"] = temp$location$lat
     dfVenue[cc, "lng"] = temp$location$lng
-    dfVenue[cc, "isBar"] = sum(grepl(pattern = "bar", x = temp$categories, ignore.case = T))>0
+    dfVenue[cc, "isBar"] = sum(grepl(pattern = "bar|pub|Brewery|Gastropub|Beer", x = temp$categories, ignore.case = T))>0
     #
     cc = cc + 1
   }
   return(dfVenue)
 }
+
+
+# venues = dir("venues")
+# for (i in venues){
+#   temp = readRDS(paste0("venues/",i))
+#   print(temp$categories$items$category_name)
+#   Sys.sleep(2)
+# }

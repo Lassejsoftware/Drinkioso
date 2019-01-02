@@ -3,17 +3,23 @@
 # 
 # user histogram plots
 #
-userHist <- function(user, simple = F){
+userHist <- function(user, simple = F, startDate){
   
   xlab = 13
+  nBar = 10
   
   # Get data
   userDat = readRDS(paste0("checkinHist/", user, ".rds"))
   if (simple){
     userDat$beer_style = gsub("\\-.*", "", userDat$beer_style)
   }
+  userDat$time = untappd2POSIXct(userDat$created_at)
+  userDat = subset(userDat, userDat$time > startDate)
   
   userDat$is_venue = ifelse(!is.na(userDat$venue_id),"Yes", "No")
+  
+  counts = count_unique(df = userDat, var = "beer_style")
+  userDat = subset(userDat, userDat$beer_style %in% counts$beer_style[1:nBar])
   
   # Plot that stuff
   

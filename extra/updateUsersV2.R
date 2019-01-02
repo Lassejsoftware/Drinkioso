@@ -8,8 +8,6 @@
 
 path = "C:/Users/jqmt/Desktop/jens/drinkioso/"
 setwd(path)
-library(jsonlite)
-library(plyr)
 #
 rm(list = ls())
 # functions

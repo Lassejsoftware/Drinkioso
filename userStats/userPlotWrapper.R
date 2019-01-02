@@ -3,7 +3,7 @@
 #
 # Wrapper for user plots
 #
-userPlotWrapper <- function(user = NULL, plotType = NULL, opts = NULL){
+userPlotWrapper <- function(user = NULL, plotType = NULL, startDate, opts = NULL){
   if (!is.null(opts)){
     if (opts == "plots"){
       plots = c("Style histogram - simple", 
@@ -14,9 +14,9 @@ userPlotWrapper <- function(user = NULL, plotType = NULL, opts = NULL){
   }
   
   p <- switch(plotType,
-              "Style histogram" = userHist(user = user),
-              "Style histogram - simple" = userHist(user = user, simple = T),
-              "Beer timeline" = userTimeline(user = user)
+              "Style histogram" = userHist(user = user, startDate = startDate),
+              "Style histogram - simple" = userHist(user = user, simple = T, startDate = startDate),
+              "Beer timeline" = userTimeline(user = user, startDate = startDate)
               )
   
   return(p)

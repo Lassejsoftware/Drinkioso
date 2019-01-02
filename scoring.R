@@ -7,7 +7,7 @@
 # dep makedfVenue.R
 #
 #
-makedfScore <- function(){
+makedfScore <- function(startDate = NULL){
   getVenueCheckIn <- function(){
     hists = dir("checkinHist/")
     cc = 1
@@ -28,6 +28,25 @@ makedfScore <- function(){
   # tot$created_at2 = as.Date( substr( tot$created_at,6, 16), format = "%d %b %Y")
   
   tot = subset(tot, !is.na(tot$venue_name))
+  tot$time = untappd2POSIXct(tot$created_at)
+  # Start date of drinkioso
+  print(dim(tot))
+  if (class(startDate)[1] == "POSIXct"){
+    tot = subset(tot, tot$time > startDate)
+    
+  }
+  print(startDate)
+  print(dim(tot))
+  # Join date for user
+  users = getUsers()
+  for (i in users){
+    userInfo = readRDS(paste0("users/",i,".rds") )
+    joinDate = userInfo$joinDate
+    if (!is.null(joinDate)){
+      vec = tot$user_name == i & tot$time<joinDate
+      tot = tot[!vec,]
+    }
+  }
 
   temp = unique(tot[,c("venue_id","venue_name")])
   temp = temp[!duplicated(temp$venue_id),]
@@ -43,7 +62,6 @@ makedfScore <- function(){
   score = na.omit(spreadTot)
   names(score)[names(score) == "lng"] = "lon"
   
-  users = getUsers()
   val = vector(mode = "numeric", length = nrow(score))
   for (i in users){
     if (i %in% names(score)){
@@ -59,35 +77,5 @@ makedfScore <- function(){
   return(score)
 }
 
-getTeam <- function(user = NULL, opts = NULL, val = NULL, col = NULL){
-  colVec = c("red", "blue")
-  if (!is.null(val)){
-    team = ifelse(test = val>0, yes = colVec[1], no = colVec[2])
-    vec = val == 0
-    team[vec] = "black"
-    return(team)
-  }
-  if (!is.null(col)){
-    col = tolower(col)
-    val = ifelse(col == colVec[1], yes = 1, no = -1)
-    return(val)
-  }
-  if (is.null(user) & is.null(opts)){
-    return()
-  }
-  teamList = list(
-    t1 = c("Garbacz", "hellegskov"),
-    t2 = c("Slendrick", "knoe1703", "camillask")
-  )
-  names(teamList) <- colVec
-  if (identical(opts, "teams")){
-    return(teamList)
-  }
-  
-  team = useDict(user, teamList)
-  if (identical(opts,"num")){
-    team = ifelse(test = team == colVec[1], yes = 1, no = -1)
-  } 
-  return(team)
-}
+
 

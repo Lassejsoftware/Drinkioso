@@ -3,10 +3,13 @@
 # userHistoryV3. 
 #
 # Todo: Make some sort of progress indicator. 
-#
+# Will create or update user checkin history. For new users it also creates a user var in users.
 #
 getUserHist <- function(user = NULL, wTime = 2*60, overWrite = F){
   if (is.null(user)){print("Specify a user, dummy!");return(NULL)}
+  
+  library(jsonlite)
+  library(plyr)
   
   source("extra/config.R")
   source("extra/unpackCheckins.R")
@@ -40,6 +43,9 @@ getUserHist <- function(user = NULL, wTime = 2*60, overWrite = F){
   
   if (!userHist){
     cHist = newCheckins[0,]
+    userInfo = untappdAPI(method = "user/info/", param = user)
+    userInfo$joinDate = as.POSIXct(Sys.Date(), format = "%Y-%b-%d")
+    saveRDS(object = userInfo, paste0("users/",user,".rds"))
   }
   
   # Check if we have them all

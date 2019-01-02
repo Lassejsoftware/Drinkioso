@@ -77,23 +77,28 @@ dashboardPage(
       ),
       tabItem("tStats",
               fluidRow(
-                h2("there will be stuff here")
+                column(4,
+                       uiOutput("teamPlotChoice")
+                ),
+                column(8,
+                       plotOutput("teamPlot")
+                )
               )     
       ),
       tabItem("vStats",
               fluidRow(
                 column(12,
                        fluidRow(
-                         box(title = "Easy pickings! These bars have no owner or only a very small lead:", width = 10,
+                         box(title = "Easy pickings! These venues have no owner or only a very small lead:", width = 10,
                           div(style = 'overflow-x: scroll', 
                               DT::dataTableOutput(outputId = "easyPick")
                               )
                          )
                        ),
                        fluidRow(
-                         column(4,
-                                uiOutput(outputId = "venueChoice")
-                         )
+                         # column(4,
+                         #        uiOutput(outputId = "venueChoice")
+                         # )
                        )
                        )
               )     
@@ -125,8 +130,11 @@ dashboardPage(
                                                 actionButton(inputId = "trophyRecalc", label = "Recalculate trophy")
                                                 )
                                          ),
-                                     box(title = "Scoring related", width = 10)
-                                     
+                                     box(title = "Scoring related", width = 10,
+                                         column(4,
+                                                uiOutput("startDate")
+                                                )
+                                         )
                                    )
                   )
                 )

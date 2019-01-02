@@ -5,15 +5,14 @@
 #
 # Packages
 library(tidyr)
+library(dplyr)
 library(shinydashboard)
 library(shiny)
 library(shinyWidgets)
 library(ggplot2)
+library(DT)
 
 # Map
-# library(ggmap)
-# library(fields)
-# library(spatialfil)
 library(leaflet)
 library(sp)
 library(htmltools)
@@ -27,7 +26,8 @@ source("mapHoverFunction.R")
 source("helperFunctions.R")
 source("extra/makeVenueList.R")
 source("extra/getUsers.R")
-source("userHistoryV3.R")
+source("extra/getTeam.R")
+# source("userHistoryV3.R")
 
 # user stats
 source("userStats/userPlotWrapper.R")
@@ -35,11 +35,10 @@ source("userStats/userHist.R")
 source("userStats/userTimeline.R")
 source("userStats/trophyWrapper.R")
 
+# Team stats
+source("teamStats/teamPlotWrapper.R")
+source("teamStats/teamTimeline.R")
+source("teamStats/teamHist.R")
 
 # Variables
 cph <<- readRDS("maps/cph.rds")
-
-# Start date
-startDate <<- as.Date("01 jan 2018", format = "%d %b %Y")
-
-# as.Date(t3, format = "%d %b %Y")
