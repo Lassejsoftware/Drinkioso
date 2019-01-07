@@ -21,15 +21,18 @@ getTeam <- function(user = NULL, opts = NULL, val = NULL, col = NULL){
     return()
   }
   teamList = list(
-    t1 = c("Garbacz", "hellegskov"),
-    t2 = c("Slendrick", "knoe1703", "camillask")
+    t1 = c("Garbacz", "hellegskov", "JayTea"),
+    t2 = c("Slendrick", "knoe1703", "camillask")#,
+    #t3 = c("moskat")
   )
   names(teamList) <- colVec
   if (identical(opts, "teams")){
+    teamList = teamList[names(teamList) != "unknown"]
     return(teamList)
   }
   
   team = useDict(user, teamList)
+  team[!(team %in% colVec)] = "unknown"
   if (identical(opts,"num")){
     team = ifelse(test = team == colVec[1], yes = 1, no = -1)
   } 

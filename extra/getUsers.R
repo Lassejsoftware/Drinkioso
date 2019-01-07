@@ -3,7 +3,10 @@
 #
 # Will fetch users in user folder
 #
-getUsers <- function(){
+getUsers <- function(team = F){
   users = tools::file_path_sans_ext(dir("checkinHist"))
+  if (team){
+    users = users[getTeam(user = users) != "unknown"]
+  }
   return(users)
 }

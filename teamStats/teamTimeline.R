@@ -5,7 +5,7 @@
 #
 # dep: dplyr
 #
-teamTimeline <- function(startDate, recalc = F){
+teamTimeline <- function(startDate, map, recalc = T, isBar = F){
   
   
   xlab = 13
@@ -13,36 +13,31 @@ teamTimeline <- function(startDate, recalc = F){
   
   if (!file.exists(file) || recalc){
     
-    getVenueCheckIn <- function(){
-      hists = dir("checkinHist/")
-      cc = 1
-      for (i in hists){
-        if (cc == 1){
-          tot = readRDS(paste0("checkinHist/",i))
-          cc = cc + 1
-        } else {
-          temp = readRDS(paste0("checkinHist/",i))
-          tot = rbind(tot,temp)
-        }
-      }
-      return(tot)
-    }
-    
     tot = getVenueCheckIn()
     tot$team = getTeam(user = tot$user_name)
     tot$time = untappd2POSIXct(tot$created_at)
     tot = subset(tot, tot$time>startDate & !is.na(tot$venue_id))
     
+    users = getUsers(team = T)
+    tot = subset(tot, tot$user_name %in% users)
+    for (i in users){
+      userInfo = readRDS(paste0("users/",i,".rds"))
+      joinDate = userInfo$joinDate
+      if (is.null(joinDate)){
+        joinDate = startDate
+      }
+      tot = subset(tot, !(tot$user_name == i & tot$time<joinDate ) )
+    }
+    
     # Only include venues in Copenhagen.
-    dfVenue = makedfVenue()
+    dfVenue = makedfVenue(map = map)
+    tot = subset(tot, tot$venue_id %in% dfVenue$venue_id)
     tot = merge(tot,dfVenue, by = "venue_id", all.x = T)
     
-    tot = subset(tot, tot$isBar)
+    if (isBar){
+      tot = subset(tot, tot$isBar)
+    }
     
-    names(tot)[names(tot) == "lng"] = "lon"
-    lims = attr(cph,"bb")
-    tot = subset(tot, tot$lat>lims$ll.lat & tot$lat<lims$ur.lat & tot$lon>lims$ll.lon & tot$lon<lims$ur.lon)
-  
     tot = arrange(tot,time)
     venues = unique(tot$venue_id)
     delta = 7*60*60*24

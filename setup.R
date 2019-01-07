@@ -11,6 +11,8 @@ library(shiny)
 library(shinyWidgets)
 library(ggplot2)
 library(DT)
+library(curl)
+library(jsonlite)
 
 # Map
 library(leaflet)
@@ -27,7 +29,8 @@ source("helperFunctions.R")
 source("extra/makeVenueList.R")
 source("extra/getUsers.R")
 source("extra/getTeam.R")
-# source("userHistoryV3.R")
+source("extra/getVenueCheckIn.R")
+source("userHistoryV3.R")
 
 # user stats
 source("userStats/userPlotWrapper.R")
@@ -39,6 +42,9 @@ source("userStats/trophyWrapper.R")
 source("teamStats/teamPlotWrapper.R")
 source("teamStats/teamTimeline.R")
 source("teamStats/teamHist.R")
+
+# Venue stats
+source("venueStats/venueTimePlot.R")
 
 # Variables
 cph <<- readRDS("maps/cph.rds")

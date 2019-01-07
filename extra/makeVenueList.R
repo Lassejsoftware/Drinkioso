@@ -13,7 +13,11 @@ makeVenueList <- function(map = NULL){
   for (i in venues){
     vDat = readRDS(paste0("venues/",i))
     if (is.null(map)){
+      
+      
       temp = c(temp, vDat$venue_name)
+      
+      
     } else {
       temp = c(temp, vDat$venue_name)
     }

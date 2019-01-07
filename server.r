@@ -6,8 +6,9 @@
 function(input, output, session) {
   # Reactives for different features.
   admin <- reactiveValues(start = as.POSIXct("01 jan 2018", format = "%d %b %Y"),
-                          score = makedfScore(startDate = as.POSIXct("01 jan 2018", format = "%d %b %Y")),
-                          calc = 1
+                          score = makedfScore(startDate = as.POSIXct("01 jan 2018", format = "%d %b %Y"), map = cph),
+                          calc = 1,
+                          map = cph
                           )
   beerReact <- reactiveValues()
   #### Welcome page ####
@@ -29,7 +30,6 @@ function(input, output, session) {
     withProgress(message = "Calculating map", value = 1,
                  {
                    beerList <- createMap(score = admin$score,
-                                         map = cph, 
                                          lambda = input$mapLambda
                                          )
                    beerReact$mapList = beerList
@@ -86,9 +86,28 @@ function(input, output, session) {
   
   #### user stats ####
   output$userChoice <- renderUI({
-    users = getUsers()
+    users = getUsers(team = T)
     selectizeInput(inputId = "user", label = "Choose a user",
                    choices = users)
+  })
+  
+  output$userStats <- DT::renderDataTable({
+    req(input$user)
+    userInfo = readRDS( paste0("users/",input$user,".rds") )
+    if (is.null(userInfo$joinDate)){joinDate = admin$start} else {joinDate = userInfo$joinDate}
+    joinDate = gsub("\\ .*", "",joinDate)
+    dfOut = data.frame(Team = proper(getTeam(user = input$user)) , 
+                       "Join date" = joinDate,
+                       "Total beers had" = sum(admin$score[[input$user]]),
+                       "Mi casa" = admin$score$venue_name[which.max(admin$score[[input$user]])],
+                      check.names = F)
+    
+    datatable(dfOut, rownames = F, options = list(dom = "t")) %>% formatStyle(
+      "Team", 
+      #target = 'row',
+      backgroundColor = styleEqual(c("Blue", "Red"), c("#619CFF", "#F8766D")) # c("lightblue", "#ff3232")
+    )
+    
   })
   
   output$userPlotChoice <- renderUI({
@@ -99,7 +118,7 @@ function(input, output, session) {
   
   output$userPlot <- renderPlot({
     req(input$user, input$userPlotChoice)
-    userPlotWrapper(user = input$user, plotType = input$userPlotChoice, startDate = admin$start)
+    userPlotWrapper(user = input$user, plotType = input$userPlotChoice, startDate = admin$start, map = cph)
   })
   
   #### team stats ####
@@ -112,26 +131,100 @@ function(input, output, session) {
   
   output$teamPlot <- renderPlot({
     req(input$teamPlotChoice)
-    teamPlotWrapper(plotType = input$teamPlotChoice, startDate = admin$start, score = admin$score)
+    teamPlotWrapper(plotType = input$teamPlotChoice, startDate = admin$start, score = admin$score, map = cph)
   })
   
+  # Dropdown menu with list of members. NOT READY FOR MORE TEAMS
+  output$teamMembers <- renderUI({
+    users = getUsers(team = T)
+    teams = getTeam(user = users)
+    
+    
+    dropdownButton(status = "default", circle = F, label = "Team members",
+      {
+        fluidRow(
+          # Red
+          column(6,
+                 HTML(paste0("<b>Red</b> <br> <br>",  paste0(users[teams == "red"], collapse = "<br>") ) )
+          ),
+          # Blue
+          column(6,
+                 HTML(paste0("<b>Blue</b> <br> <br>",  paste0(users[teams == "blue"], collapse = "<br>") ) )
+          )
+        )
+    })
+  })
+  
+  # Table with some stats
+  output$teamStats <-  DT::renderDataTable({
+    cats = c("Team Hideout",
+             "Most valuable drinker",
+             "Number of owned bars"
+    )
+    dfTeam = data.frame("Category" = cats,
+                        Red = "empty",
+                        Blue = "empty",
+                        check.names = F,
+                        row.names = cats,
+                        stringsAsFactors = F)
+    score = admin$score
+    # Highest scored venue
+    dfTeam[cats[1],proper(getTeam(val = 1 ))] = as.character(score$venue_name[which.max(score$val)])
+    dfTeam[cats[1],proper(getTeam(val = -1))] = as.character(score$venue_name[which.min(score$val)])
+    
+    # Most valuable drinker
+    users = getUsers(team = T)
+    dfRes = data.frame(user = rep("start", length(users)), team = rep("start", length(users)), val = rep(0, length(users)), stringsAsFactors = F)
+    dfVenue = makedfVenue(map = admin$map)
+    cc = 1
+    for (i in users){ # Perhaps llaply this fucker?
+      checks = readRDS(paste0("checkinHist/",i,".rds"))
+      checks = subset(checks, checks$venue_id %in% dfVenue$venue_id)
+      info = readRDS(paste0("users/",i,".rds"))
+      checks$time = untappd2POSIXct(checks$created_at)
+      if (!is.null(info$joinDate)){
+        checks = subset(checks, checks$time > admin$start & checks$time > info$joinDate & !is.na(checks$venue_id) )
+      } else {
+        checks = subset(checks, checks$time > admin$start & !is.na(checks$venue_id))
+      }
+      dfRes$user[cc] = i
+      dfRes$team[cc] = proper(getTeam(user = i))
+      dfRes$val[cc] = nrow(checks)
+      cc = cc + 1
+    }
+    dfAgg = dfRes %>% group_by(team) %>% filter(val == max(val))
+    for (i in dfAgg$team){
+      dfTeam[cats[2],i] = dfAgg$user[dfAgg$team == i]
+    }
+    
+    # Number of bars
+    counts = count_unique(score, "col")
+    counts = subset(counts, counts$col != "black")
+    counts$col = proper(counts$col)
+    for (i in unique(counts$col)){
+      dfTeam[cats[3], i] = counts$N[counts$col == i]
+    }
+    
+    # Output table
+    datatable(dfTeam, rownames = F, options = list(dom = "t"))%>% 
+      formatStyle(
+      "Red",
+      backgroundColor = "#F8766D"
+      ) %>%
+      formatStyle(
+        "Blue",
+        backgroundColor = "#619CFF"
+      )
+  })
   
   
   #### venue stats ####
   
-  output$venueChoice <- renderUI({
-    venueNames <- makeVenueList(map = cph)
-    selectizeInput(inputId = "venueNames", 
-                   label = "Venues",
-                   choices = sort(venueNames$names))
-  })
-  
   output$easyPick <- DT::renderDataTable({
     req(beerReact$mapList$score)
     
-    score = beerReact$mapList$score
-    # users = getUsers()
-    # users = users[users %in% names(score)]
+    # score = beerReact$mapList$score
+    score = admin$score
     dfOut = subset(score, abs(score$val)<2 & score$isBar == T, select = c("venue_name", "val","col") ) # ,users
     dfOut$col = proper(dfOut$col)
     dfOut$col[dfOut$val == 0] = "No owner"
@@ -143,11 +236,61 @@ function(input, output, session) {
     datatable(dfOut, rownames = F) %>% formatStyle(
       "Owner", 
       #target = 'row',
-      backgroundColor = styleEqual(c("Blue", "Red"), c("lightblue", "#ff3232"))
+      backgroundColor = styleEqual(c("Blue", "Red"), c("#619CFF", "#F8766D")) # c("lightblue", "#ff3232")
     )
   }) 
   
+  output$venueChoice <- renderUI({
+    selectizeInput(inputId = "venueChoice", 
+                   label = "Venues",
+                   choices = sort(trimws(as.character(admin$score$venue_name)))
+                   )
+  })
+  
+  observeEvent(input$venueChoice,{
+    req(input$venueChoice)
+    score = admin$score
+    # Lets just assume venue_names are somewhat unique
+    venueId = score$venue_id[trimws(score$venue_name) == input$venueChoice]
+    
+    # plot
+    output$venueTimePlot = renderPlot({
+      venueTimePlot(venueId = venueId, startDate = admin$start)
+    })
+  })
+  
+  output$venueStats <- DT::renderDataTable({
+    score = admin$score
+    users = getUsers(team = T)
+    # dfVen = subset(score, score$venue_id == venueId, select = c("venue_name", "col", "val", users))
+    dfVen = subset(score, !is.na(score$venue_id), select = c("venue_name", "col", "val", users) )
+    dfVen$tot = rowSums(dfVen[,users])
+    dfVen = subset(dfVen, !is.na(dfVen$col), select = c("venue_name", "col", "val", "tot", users) )
+    dfVen$col = proper(dfVen$col)
+    dfVen$col[dfVen$val == 0] = "No owner"
+    dfVen$val = abs(dfVen$val)
+    dfVen = arrange(dfVen, desc(val))
+    # From -> to
+    nameVec = c(venue_name = "Venue Name", col = "Owner", val = "Score", tot = "Total beers at venue")
+    dfVen = plyr::rename(dfVen, nameVec)
+    
+    blueVec = which(getTeam(users) == "blue")
+    redVec = which(getTeam(users) == "red")
+    
+    datatable(dfVen, rownames = F, options = list(pageLength = 50)) %>% formatStyle(
+      users[blueVec],
+      backgroundColor =  c("#619CFF") 
+    ) %>% formatStyle(
+      users[redVec],
+      backgroundColor =  c("#F8766D")
+    ) %>% formatStyle( 
+      "Owner",
+      backgroundColor = styleEqual(c("Blue", "Red"), c("#619CFF", "#F8766D"))
+    )
+  })
+  
   #### Admin panel ####
+  
   output$adminSwitch <- reactive({
     if (input$adminPass == "store patter"){
       return(TRUE)
@@ -176,7 +319,7 @@ function(input, output, session) {
     if (input$usersAdmin %in% users){
       print("Updating user.")
       withProgress(message = "Getting user history", value = 1, {
-        getUserHist(user = input$usersAdmin, wTime = 10)
+        getUserHist(user = input$usersAdmin, wTime = 60)
       })
     } else {
       print("Creating user.")
@@ -188,7 +331,7 @@ function(input, output, session) {
         getUserHist(user = input$usersAdmin, wTime = 10)
       })
     }
-    
+    admin$score = makedfScore(startDate = admin$start, map = cph)
   })
   
   ## Trophy related
@@ -212,7 +355,7 @@ function(input, output, session) {
   observeEvent(input$startDate,{
     if (!is.null(input$startDate)){
       admin$start = input$startDate
-      admin$score = makedfScore(startDate = admin$start)
+      admin$score = makedfScore(startDate = admin$start, map = cph)
       admin$calc = admin$calc + 1
     }
   })

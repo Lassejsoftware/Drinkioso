@@ -51,11 +51,24 @@ dashboardPage(
               fluidRow(
                 leafletOutput("beerMap",
                               height = 800)
+              ),
+              br(),
+              fluidRow(
+                box(title = "Easy pickings! These venues have no owner or only a very small lead:", width = 10,
+                 div(style = 'overflow-x: scroll',
+                     DT::dataTableOutput(outputId = "easyPick")
+                     )
+                )
               )
       ),
       tabItem("uStats",
               fluidRow(
-                uiOutput("userChoice")
+                column(3,
+                       uiOutput("userChoice")
+                       ),
+                column(9,
+                       DT::dataTableOutput(outputId = "userStats")
+                       )
               ),
               br(),
               fluidRow(
@@ -67,10 +80,10 @@ dashboardPage(
                     )
               ), 
               br(),
-              fluidRow(column(4,
+              fluidRow(column(3,
                               uiOutput("userPlotChoice")
                               ),
-                       column(8,
+                       column(9,
                               plotOutput("userPlot")
                               )
                        )
@@ -78,27 +91,35 @@ dashboardPage(
       tabItem("tStats",
               fluidRow(
                 column(4,
-                       uiOutput("teamPlotChoice")
+                       uiOutput("teamPlotChoice"),
+                       uiOutput("teamMembers")
                 ),
                 column(8,
                        plotOutput("teamPlot")
                 )
-              )     
+              ),
+              fluidRow(
+                column(12,
+                       DT::dataTableOutput(outputId = "teamStats")
+                       )
+              )
       ),
       tabItem("vStats",
               fluidRow(
                 column(12,
                        fluidRow(
-                         box(title = "Easy pickings! These venues have no owner or only a very small lead:", width = 10,
-                          div(style = 'overflow-x: scroll', 
-                              DT::dataTableOutput(outputId = "easyPick")
-                              )
-                         )
+                         column(3,
+                                uiOutput(outputId = "venueChoice")
+                         ), 
+                         column(9,
+                                plotOutput(outputId = "venueTimePlot")
+                                )
                        ),
+                       br(),
                        fluidRow(
-                         # column(4,
-                         #        uiOutput(outputId = "venueChoice")
-                         # )
+                         column(12,
+                                DT::dataTableOutput(outputId = "venueStats")
+                                )
                        )
                        )
               )     

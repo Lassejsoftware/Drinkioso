@@ -3,7 +3,7 @@
 #
 # histogram of owned bars
 #
-teamHist <- function(score, startDate){
+teamHist <- function(score, startDate, isBar = F){
   xlab = 13
   delta = 5
   
@@ -12,7 +12,10 @@ teamHist <- function(score, startDate){
   BREAKS = seq(0,max(score$val), delta)
   score$cuts = cut(score$val, BREAKS, ordered_result = T, include.lowest = F)
   
-  score = subset(score, !is.na(score$cuts) & score$isBar)
+  score = subset(score, !is.na(score$cuts) )
+  if (isBar){
+    score = subset(score, score$isBar)
+  }
   score$col = proper(score$col)
   score$col = factor(score$col, levels = unique(score$col))
   

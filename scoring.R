@@ -7,21 +7,7 @@
 # dep makedfVenue.R
 #
 #
-makedfScore <- function(startDate = NULL){
-  getVenueCheckIn <- function(){
-    hists = dir("checkinHist/")
-    cc = 1
-    for (i in hists){
-      if (cc == 1){
-        tot = readRDS(paste0("checkinHist/",i))
-        cc = cc + 1
-      } else {
-        temp = readRDS(paste0("checkinHist/",i))
-        tot = rbind(tot,temp)
-      }
-    }
-    return(tot)
-  }
+makedfScore <- function(startDate = NULL, map = NULL, isBar = F){
   #
   tot = getVenueCheckIn()
   
@@ -33,7 +19,6 @@ makedfScore <- function(startDate = NULL){
   print(dim(tot))
   if (class(startDate)[1] == "POSIXct"){
     tot = subset(tot, tot$time > startDate)
-    
   }
   print(startDate)
   print(dim(tot))
@@ -56,10 +41,13 @@ makedfScore <- function(startDate = NULL){
   spreadTot = spread(aggTot, key = user_name, value = count)
   spreadTot[is.na(spreadTot)] = 0
   #
-  dfVenue = makedfVenue()
+  dfVenue = makedfVenue(map = map)
   spreadTot = merge(spreadTot,dfVenue, by = "venue_id", all.x = T)
   #
   score = na.omit(spreadTot)
+  if (isBar){
+    score = subset(score, score$isBar)
+  }
   names(score)[names(score) == "lng"] = "lon"
   
   val = vector(mode = "numeric", length = nrow(score))
@@ -74,6 +62,8 @@ makedfScore <- function(startDate = NULL){
   # Add team colours
   score$col = getTeam(val = score$val)
   #
+  
+  
   return(score)
 }
 

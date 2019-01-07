@@ -8,8 +8,8 @@
 getUserHist <- function(user = NULL, wTime = 2*60, overWrite = F){
   if (is.null(user)){print("Specify a user, dummy!");return(NULL)}
   
-  library(jsonlite)
-  library(plyr)
+  # library(jsonlite)
+  # library(plyr)
   
   source("extra/config.R")
   source("extra/unpackCheckins.R")
@@ -23,13 +23,14 @@ getUserHist <- function(user = NULL, wTime = 2*60, overWrite = F){
     if (is.null(on)) {
       on <- intersect(names(x), names(y))
     }
-    keys <- join.keys(x, y, on)
+    keys <- plyr::join.keys(x, y, on)
     x[keys$x %in% keys$y, , drop = FALSE]
   }
   
   # Setup api.
   method = "user/checkins/"
   lim = 50 # Untappd does not support more than 50 beer returns a time
+  maxSiz = 350
   
   # Get the checkins. 
   if (file.exists(paste0("checkinHist/",user,".rds") )){
@@ -64,7 +65,8 @@ getUserHist <- function(user = NULL, wTime = 2*60, overWrite = F){
         olderChecks = unpackCheckins(olderChecksRet)
         temp = row_match(cHist, olderChecks)
         dfLarge = rbind(dfLarge,olderChecks)
-        if (dim(temp)[1] != 0 || nrow(olderChecks) != lim){
+        print(dim(dfLarge))
+        if (dim(temp)[1] != 0 || nrow(olderChecks) != lim || nrow(dfLarge) == maxSiz){
           cHist = rbind(cHist, dfLarge)
           S = 0
         }

@@ -5,7 +5,7 @@
 #
 # map is basically only for limiting georgraphy of bars.
 #
-createMap <- function(score, map, lambda = 650, noTeam = NULL){
+createMap <- function(score, lambda = 650, noTeam = NULL){
   outList = list()
   
   calcMap <- function(x, y, x0, y0, S, lambda){
@@ -36,8 +36,8 @@ createMap <- function(score, map, lambda = 650, noTeam = NULL){
   }
   
   # Only include bars in Copenhagen.
-  lims = attr(map,"bb")
-  score = subset(score, score$lat>lims$ll.lat & score$lat<lims$ur.lat & score$lon>lims$ll.lon & score$lon<lims$ur.lon)
+  # lims = attr(map,"bb")
+  # score = subset(score, score$lat>lims$ll.lat & score$lat<lims$ur.lat & score$lon>lims$ll.lon & score$lon<lims$ur.lon)
   
   # Make labels
   users = dir("checkinHist/")
