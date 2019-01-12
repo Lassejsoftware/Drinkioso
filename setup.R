@@ -3,11 +3,13 @@
 #
 # Loads some stuff and make it global
 #
+.libPaths(c("/home/shiny/R_libs", .libPaths())) # libs on aws
 # Packages
+# library(shiny)
 library(tidyr)
+library(plyr)
 library(dplyr)
 library(shinydashboard)
-library(shiny)
 library(shinyWidgets)
 library(ggplot2)
 library(DT)
