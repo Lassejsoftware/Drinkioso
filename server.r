@@ -76,7 +76,7 @@ function(input, output, session) {
     # With bars sommer::jet.colors
     const = 10
     leaflet(spgons) %>% addTiles() %>%
-      addPolygons(color = sommer::jet.colors(NLEV, NULL)[LEVS], fillOpacity = fillOVec, opacity = oVec) %>%
+      addPolygons(color = matlab::jet.colors(NLEV)[LEVS], fillOpacity = fillOVec, opacity = oVec) %>%
       addCircles(lng = beerList$score$lon, lat = beerList$score$lat,
                  radius = abs(beerList$score$val)+const, opacity = 1, col = beerList$score$col, fillOpacity = 1, label = lapply(beerList$score$label,HTML),
                  labelOptions = list(textsize = "15px")) %>% 
