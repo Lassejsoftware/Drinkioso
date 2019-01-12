@@ -74,14 +74,15 @@ function(input, output, session) {
     spgons = SpatialPolygons(pgons)
     
     # With bars sommer::jet.colors
+    const = 10
     leaflet(spgons) %>% addTiles() %>%
       addPolygons(color = sommer::jet.colors(NLEV, NULL)[LEVS], fillOpacity = fillOVec, opacity = oVec) %>%
-      # addPolygons(color = heat.colors(NLEV, NULL)[LEVS], fillOpacity = input$mapAlpha) %>%
       addCircles(lng = beerList$score$lon, lat = beerList$score$lat,
-                 radius = abs(beerList$score$val), opacity = 1, col = beerList$score$col, fillOpacity = 1, label = lapply(beerList$score$label,HTML),
+                 radius = abs(beerList$score$val)+const, opacity = 1, col = beerList$score$col, fillOpacity = 1, label = lapply(beerList$score$label,HTML),
                  labelOptions = list(textsize = "15px")) %>% 
       addCircles(lng = beerList$score$lon, lat = beerList$score$lat,
-                 radius = abs(beerList$score$val), opacity = 1, col = "black", fill = F, weight = 3) 
+                 radius = abs(beerList$score$val) + const, opacity = 1, col = "black", fill = F, weight = 3) 
+    
   })
   
   #### user stats ####

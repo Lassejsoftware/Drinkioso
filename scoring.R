@@ -7,7 +7,7 @@
 # dep makedfVenue.R
 #
 #
-makedfScore <- function(startDate = NULL, map = NULL, isBar = F){
+makedfScore <- function(startDate = NULL, map = NULL, isBar = F, multi = T){
   #
   tot = getVenueCheckIn()
   
@@ -58,6 +58,10 @@ makedfScore <- function(startDate = NULL, map = NULL, isBar = F){
     }
   }
   score$val = val
+  
+  if (multi){
+    score$val = score$val * score$multiplyer
+  }
   
   # Add team colours
   score$col = getTeam(val = score$val)

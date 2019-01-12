@@ -14,7 +14,9 @@ rm(list = ls())
 source("extra/getUsers.R")
 source("userHistoryV3.R")
 #
+noUsers = c("Merrillr")
 users = getUsers()
+users = subset(users, !(users %in% noUsers))
 #
 for (i in users){
   print(i)
