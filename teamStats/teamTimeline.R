@@ -21,7 +21,7 @@ teamTimeline <- function(startDate, map, recalc = T, isBar = F){
     users = getUsers(team = T)
     tot = subset(tot, tot$user_name %in% users)
     for (i in users){
-      userInfo = readRDS(paste0("users/",i,".rds"))
+      userInfo = readRDS(paste0("../drinkiosoData/users/",i,".rds"))
       joinDate = userInfo$joinDate
       if (is.null(joinDate)){
         joinDate = startDate

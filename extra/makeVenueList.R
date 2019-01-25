@@ -7,11 +7,11 @@
 # Map is only used to limit venue geography
 #
 makeVenueList <- function(map = NULL){
-  venues = dir("venues")
+  venues = dir("../drinkiosoData/venues")
   venueList = list()
   temp = c()
   for (i in venues){
-    vDat = readRDS(paste0("venues/",i))
+    vDat = readRDS(paste0("../drinkiosoData/venues/",i))
     if (is.null(map)){
       
       

@@ -101,7 +101,7 @@ function(input, output, session) {
   
   output$userStats <- DT::renderDataTable({
     req(input$user)
-    userInfo = readRDS( paste0("users/",input$user,".rds") )
+    userInfo = readRDS( paste0("../drinkiosoData/users/",input$user,".rds") )
     if (is.null(userInfo$joinDate)){joinDate = admin$start} else {joinDate = userInfo$joinDate}
     joinDate = gsub("\\ .*", "",joinDate)
     dfOut = data.frame(Team = proper(getTeam(user = input$user)) , 
@@ -191,9 +191,9 @@ function(input, output, session) {
     dfVenue = makedfVenue(map = admin$map)
     cc = 1
     for (i in users){ # Perhaps llaply this fucker?
-      checks = readRDS(paste0("checkinHist/",i,".rds"))
+      checks = readRDS(paste0("../drinkiosoData/checkinHist/",i,".rds"))
       checks = subset(checks, checks$venue_id %in% dfVenue$venue_id)
-      info = readRDS(paste0("users/",i,".rds"))
+      info = readRDS(paste0("../drinkiosoData/users/",i,".rds"))
       checks$time = untappd2POSIXct(checks$created_at)
       if (!is.null(info$joinDate)){
         checks = subset(checks, checks$time > admin$start & checks$time > info$joinDate & !is.na(checks$venue_id) )

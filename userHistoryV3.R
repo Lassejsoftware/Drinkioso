@@ -33,8 +33,8 @@ getUserHist <- function(user = NULL, wTime = 2*60, overWrite = F){
   maxSiz = 350
   
   # Get the checkins. 
-  if (file.exists(paste0("checkinHist/",user,".rds") )){
-    cHist = readRDS(paste0("checkinHist/",user,".rds"))
+  if (file.exists(paste0("../drinkiosoData/checkinHist/",user,".rds") )){
+    cHist = readRDS(paste0("../drinkiosoData/checkinHist/",user,".rds"))
     userHist = T
   } else {userHist = F}
   print("Getting checkins")
@@ -46,7 +46,7 @@ getUserHist <- function(user = NULL, wTime = 2*60, overWrite = F){
     cHist = newCheckins[0,]
     userInfo = untappdAPI(method = "user/info/", param = user)
     userInfo$joinDate = as.POSIXct(Sys.Date(), format = "%Y-%b-%d")
-    saveRDS(object = userInfo, paste0("users/",user,".rds"))
+    saveRDS(object = userInfo, paste0("../drinkiosoData/users/",user,".rds"))
   }
   
   # Check if we have them all
@@ -78,7 +78,7 @@ getUserHist <- function(user = NULL, wTime = 2*60, overWrite = F){
     dups = duplicated(cHist$checkin_id)
     cHist = cHist[!dups,]
     cHist = cHist[order(cHist$checkin_id, decreasing = T),]
-    saveRDS(cHist, file = paste0("checkinHist/",user,".rds") )
+    saveRDS(cHist, file = paste0("../drinkiosoData/checkinHist/",user,".rds") )
   } else {
     print("No new checkins!")
   }

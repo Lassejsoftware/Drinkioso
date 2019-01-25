@@ -15,8 +15,8 @@ userHist <- function(user, startDate, map, isBar = F, reCalc = F){
     nBar = 10
     
     # Get data
-    userDat = readRDS(paste0("checkinHist/", user, ".rds"))
-    userInfo = readRDS(paste0("users/", user, ".rds"))
+    userDat = readRDS(paste0("../drinkiosoData/checkinHist/", user, ".rds"))
+    userInfo = readRDS(paste0("../drinkiosoData/users/", user, ".rds"))
     joinDate = userInfo$joinDate
     if (is.null(joinDate)){
       joinDate = startDate

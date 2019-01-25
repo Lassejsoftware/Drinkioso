@@ -26,7 +26,7 @@ makedfScore <- function(startDate = NULL, map = NULL, isBar = F, multi = T){
   }
   # Join date for user
   for (i in users){
-    userInfo = readRDS(paste0("users/",i,".rds") )
+    userInfo = readRDS(paste0("../drinkiosoData/users/",i,".rds") )
     joinDate = userInfo$joinDate
     if (!is.null(joinDate)){
       vec = tot$user_name == i & tot$time<joinDate

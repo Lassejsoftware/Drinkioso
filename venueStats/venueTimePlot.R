@@ -8,7 +8,7 @@ venueTimePlot <- function(venueId, startDate, tot = NULL){
   outList = list()
   outList$id = venueId
   xlab = 13
-  venueInfo = readRDS(paste0("venues/", venueId, ".rds"))
+  venueInfo = readRDS(paste0("../drinkiosoData/venues/", venueId, ".rds"))
   outList$venueName = venueInfo$venue_name
   if (is.null(tot)){
     tot = getVenueCheckIn(team = T)
@@ -22,7 +22,7 @@ venueTimePlot <- function(venueId, startDate, tot = NULL){
   tot = subset(tot, tot$user_name %in% users)
   
   for (i in users){
-    userInfo = readRDS(paste0("users/",i,".rds"))
+    userInfo = readRDS(paste0("../drinkiosoData/users/",i,".rds"))
     joinDate = userInfo$joinDate
     if (is.null(joinDate)){
       joinDate = startDate

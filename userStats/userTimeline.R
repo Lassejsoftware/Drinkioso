@@ -14,8 +14,8 @@ userTimeline <- function(user, startDate, map, isBar = F, reCalc = F){
   # if (reCalc || !file.exists(fileName)){
     
     # Get data
-    userDat = readRDS(paste0("checkinHist/", user, ".rds"))
-    userInfo = readRDS(paste0("users/", user, ".rds"))
+    userDat = readRDS(paste0("../drinkiosoData/checkinHist/", user, ".rds"))
+    userInfo = readRDS(paste0("../drinkiosoData/users/", user, ".rds"))
     joinDate = userInfo$joinDate
     if (is.null(joinDate)){
       joinDate = startDate

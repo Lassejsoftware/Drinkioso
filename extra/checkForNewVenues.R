@@ -7,7 +7,7 @@
 #
 checkForNewVenues <- function(df, overWrite = 0, wTime = 2*60){
   method = "venue/info/"
-  venuesOld = dir("venues/")
+  venuesOld = dir("../drinkiosoData/venues/")
   venuesNew = unique(makeVenueNames(df))
   if (overWrite == 0){
     venuesNew = subset(venuesNew, !(venuesNew$name %in% venuesOld) )
@@ -19,7 +19,7 @@ checkForNewVenues <- function(df, overWrite = 0, wTime = 2*60){
     venueInfo = untappdAPI(method = method, param = venuesNew$venue_id[i])
     listVenue = venueInfo$response$venue
     print(paste0("Saving venue ", venuesNew$venue_slug[i]))
-    saveRDS(listVenue, file = paste0("venues/", venuesNew$name[i]))
+    saveRDS(listVenue, file = paste0("../drinkiosoData/venues/", venuesNew$name[i]))
     print("Waiting for next call")
     print(paste0(dim(venuesNew)[1] - i," venues left."))
     Sys.sleep(wTime)

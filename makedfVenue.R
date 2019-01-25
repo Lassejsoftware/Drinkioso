@@ -4,7 +4,7 @@
 # Make a df with venue info. This is nothing but a draft.
 #
 makedfVenue <- function(map = NULL){
-  venues = dir("venues")
+  venues = dir("../drinkiosoData/venues")
   dfVenue = data.frame()
   cc = 1
   defaultVal = 0.5
@@ -17,7 +17,7 @@ makedfVenue <- function(map = NULL){
                     )
   
   for (i in venues){
-    temp = readRDS(paste0("venues/",i))
+    temp = readRDS(paste0("../drinkiosoData/venues/",i))
     #
     dfVenue[cc, "venue_id"] = temp$venue_id
     dfVenue[cc, "total_count"] = temp$stats$total_count
