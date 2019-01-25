@@ -3,18 +3,24 @@
 #
 # Makes a plot of when people visited a venue.
 #
-venueTimePlot <- function(venueId, startDate){
+venueTimePlot <- function(venueId, startDate, tot = NULL){
   
+  outList = list()
+  outList$id = venueId
   xlab = 13
-  
   venueInfo = readRDS(paste0("venues/", venueId, ".rds"))
-  
-  tot = getVenueCheckIn()
-  tot = tot[!is.na(tot$venue_id),]
+  outList$venueName = venueInfo$venue_name
+  if (is.null(tot)){
+    tot = getVenueCheckIn(team = T)
+  }
+  # tot = tot[!is.na(tot$venue_id),]
   tot = subset(tot, tot$venue_id == venueId)
   tot$time = untappd2POSIXct(tot$created_at)
   
-  users = tot$user_name
+  # users = tot$user_name
+  users = getUsers(team = T)
+  tot = subset(tot, tot$user_name %in% users)
+  
   for (i in users){
     userInfo = readRDS(paste0("users/",i,".rds"))
     joinDate = userInfo$joinDate
@@ -24,10 +30,8 @@ venueTimePlot <- function(venueId, startDate){
     tot = subset(tot, !(tot$user_name == i & tot$time<joinDate) )
   }
   
-  if (nrow(tot)<3){
-    return( ggplot() + labs(title = "Venue has seen too little action for a graph"))
-  }
-  
+  if (nrow(tot)>=3){
+    
   tot = arrange(tot,time)
   tot$cc = 1:nrow(tot)
   tot$val = getTeam(user = tot$user_name, opts = "num")
@@ -37,7 +41,7 @@ venueTimePlot <- function(venueId, startDate){
   
   tot$team = factor(tot$team, levels = unique(tot$team))
   
-  
+  outList$data = tot
   p <- ggplot(tot) + 
     geom_point(aes(x = time, y = cc, color = team, size = abs(teamNum))) +
     geom_line(aes(x = time, y = cc)) + 
@@ -50,7 +54,12 @@ venueTimePlot <- function(venueId, startDate){
       axis.text.x = element_text(angle = 90, hjust=1, vjust=0.5, size = xlab),
       axis.text.y = element_text(size = xlab)
     )  
+  } else {
+    outList$data = tot
+    p <- ggplot() + labs(title = "Venue has seen too little action for a graph") 
+  }
+  outList$plot = p
 
-  return(p)
+  return(outList)
 
 }

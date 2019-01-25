@@ -9,9 +9,9 @@ teamTimeline <- function(startDate, map, recalc = T, isBar = F){
   
   
   xlab = 13
-  file = "teamStats/timeSeries.rds"
-  
-  if (!file.exists(file) || recalc){
+  # file = "teamStats/timeSeries.rds"
+  # 
+  # if (!file.exists(file) || recalc){
     
     tot = getVenueCheckIn()
     tot$team = getTeam(user = tot$user_name)
@@ -62,16 +62,18 @@ teamTimeline <- function(startDate, map, recalc = T, isBar = F){
     
     dfRes$team = proper(dfRes$team)
     
-    saveRDS(dfRes, file)
-  } else {
-    dfRes = readRDS(file)
-  }
+  #   saveRDS(dfRes, file)
+  # } else {
+  #   dfRes = readRDS(file)
+  # }
   
   dfRes$team2 = factor(dfRes$team, levels = unique(dfRes$team))
   
   p <- ggplot(dfRes) + 
     geom_point(aes(x = time2, y = N, color = team2), size = 4) + 
     labs(x = "", y = "Number of bars", title = "Number of venues owned by the different teams", color = "Team") +
+    scale_color_manual(values = c(Blue = "#619CFF",
+                                  Red =  "#F8766D")) +
     theme(
       axis.text.x = element_text(size = xlab),
       axis.text.y = element_text(size = xlab)
@@ -87,4 +89,4 @@ teamTimeline <- function(startDate, map, recalc = T, isBar = F){
 # source("extra/getTeam.R")
 # startDate = as.POSIXct("01 jan 2018", format = "%d %b %Y")
 # cph <<- readRDS("maps/cph.rds")
-# teamTimeline(startDate)
+# teamTimeline(startDate

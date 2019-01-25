@@ -3,10 +3,16 @@
 #
 # server side of drinkioso v0.1 
 #
+
+startDate = readRDS("extra/data/startDate.rds")
+
 function(input, output, session) {
   # Reactives for different features.
-  admin <- reactiveValues(start = as.POSIXct("01 jan 2018", format = "%d %b %Y"),
-                          score = makedfScore(startDate = as.POSIXct("01 jan 2018", format = "%d %b %Y"), map = cph),
+  admin <- reactiveValues(start = startDate, #as.POSIXct("01 jan 2018", format = "%d %b %Y"),
+                          score = makedfScore(
+                            startDate = startDate,
+                            # startDate = as.POSIXct("01 jan 2018", format = "%d %b %Y"),
+                            map = cph),
                           calc = 1,
                           map = cph
                           )
@@ -38,6 +44,7 @@ function(input, output, session) {
   
   # Make the plot
   output$beerMap <- renderLeaflet({
+    print(admin$start)
     req(beerReact$mapList)
     beerList <- beerReact$mapList
     BREAKS = c(seq(-40, 40, by=10),-5,5,-1,1,-0.1,0.1) # 
@@ -117,10 +124,15 @@ function(input, output, session) {
                    )
   })
   
-  output$userPlot <- renderPlot({
+  output$userPlot <- renderCachedPlot({
     req(input$user, input$userPlotChoice)
     userPlotWrapper(user = input$user, plotType = input$userPlotChoice, startDate = admin$start, map = cph)
-  })
+  }, cacheKeyExpr = list(input$user, input$userPlotChoice, admin$start))
+  
+  # 
+  # output$testImage <- renderImage({
+  #   list(src = "imagetest.gif")
+  # }, deleteFile = F)
   
   #### team stats ####
   
@@ -130,10 +142,10 @@ function(input, output, session) {
     )
   })
   
-  output$teamPlot <- renderPlot({
+  output$teamPlot <- renderCachedPlot({
     req(input$teamPlotChoice)
     teamPlotWrapper(plotType = input$teamPlotChoice, startDate = admin$start, score = admin$score, map = cph)
-  })
+  }, cacheKeyExpr = list(input$teamPlotChoice, admin$start) )
   
   # Dropdown menu with list of members. NOT READY FOR MORE TEAMS
   output$teamMembers <- renderUI({
@@ -256,7 +268,8 @@ function(input, output, session) {
     
     # plot
     output$venueTimePlot = renderPlot({
-      venueTimePlot(venueId = venueId, startDate = admin$start)
+      plotList <- venueTimePlot(venueId = venueId, startDate = admin$start)
+      return(plotList$plot)
     })
   })
   
@@ -306,7 +319,7 @@ function(input, output, session) {
     users <- getUsers()
     selectizeInput(inputId = "usersAdmin", label = "Choose a user to update or add new user",
                    choices = users,
-                   multiple = F,
+                   multiple = T,
                    options = list(
                      create = T, # Possible to create new user
                      persist = T # Not possible to choose the new option as a usual option
@@ -317,31 +330,38 @@ function(input, output, session) {
   observeEvent(input$updateUsers,{
     req(input$usersAdmin)
     users = getUsers()
-    if (input$usersAdmin %in% users){
-      print("Updating user.")
-      withProgress(message = "Getting user history", value = 1, {
-        getUserHist(user = input$usersAdmin, wTime = 60)
-      })
-    } else {
-      print("Creating user.")
-      showModal(modalDialog(
-        fluidRow(h2(paste0("The user:", input$usersAdmin," will be created")))
-      )
-      )
-      withProgress(message = "Creating user in database", value = 1, {
-        getUserHist(user = input$usersAdmin, wTime = 10)
-      })
+    updateUsers <- input$usersAdmin
+    for (i in updateUsers){
+      if (i %in% users){
+        print("Updating user.")
+        withProgress(message = "Getting user history", value = 1, {
+          getUserHist(user = i, wTime = 60)
+        })
+      } else {
+        print("Creating user.")
+        showModal(modalDialog(
+          fluidRow(h2(paste0("The user:", i," will be created")))
+        )
+        )
+        withProgress(message = "Creating user in database", value = 1, {
+          getUserHist(user = i, wTime = 10)
+        })
+      }
     }
-    admin$score = makedfScore(startDate = admin$start, map = cph)
+    
+    # Recalc user stats
+    trophies = trophyWrapper(opts = "trophies")
+    for (i in trophies){
+      trophyWrapper(trophy = i, startDate = admin$start, map = admin$map, reCalc = T)
+    }
+    
+    # Delete cache
+    file.remove(dir("myapp-cache/",full.names = T))
+    
+    # Recalc score
+    admin$score = makedfScore(startDate = admin$start, map = admin$map)
   })
   
-  ## Trophy related
-  output$trophies <- renderUI({
-    selectizeInput(inputId = "trophyCalc", label = "Choose a trophy to update",
-                   choices = trophyWrapper(opts = "trophies"),
-                   multiple = F
-    )
-  })
   
   ## Scoring related
   output$startDate = renderUI({

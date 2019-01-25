@@ -10,6 +10,10 @@
 makedfScore <- function(startDate = NULL, map = NULL, isBar = F, multi = T){
   #
   tot = getVenueCheckIn()
+  users = getUsers(team = T)
+  
+  # Delete venues indexed but without team checkin
+  tot = subset(tot, tot$user_name %in% users)
   
   # tot$created_at2 = as.Date( substr( tot$created_at,6, 16), format = "%d %b %Y")
   
@@ -20,10 +24,7 @@ makedfScore <- function(startDate = NULL, map = NULL, isBar = F, multi = T){
   if (class(startDate)[1] == "POSIXct"){
     tot = subset(tot, tot$time > startDate)
   }
-  print(startDate)
-  print(dim(tot))
   # Join date for user
-  users = getUsers()
   for (i in users){
     userInfo = readRDS(paste0("users/",i,".rds") )
     joinDate = userInfo$joinDate
@@ -60,13 +61,11 @@ makedfScore <- function(startDate = NULL, map = NULL, isBar = F, multi = T){
   score$val = val
   
   if (multi){
-    score$val = score$val * score$multiplyer
+    score$val = score$val * score$multiplier
   }
   
   # Add team colours
   score$col = getTeam(val = score$val)
-  #
-  
   
   return(score)
 }

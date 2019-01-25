@@ -4,6 +4,7 @@
 # Loads some stuff and make it global
 #
 .libPaths(c("/home/shiny/R_libs", .libPaths())) # libs on aws
+shinyOptions(cache = diskCache("./myapp-cache"))
 # Packages
 # library(shiny)
 library(tidyr)

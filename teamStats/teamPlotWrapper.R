@@ -14,7 +14,7 @@ teamPlotWrapper <- function(plotType = NULL, startDate = NULL, score = NULL, map
   
   p <- switch(plotType,
               "Venues over time" = teamTimeline(startDate = startDate, map = map, recalc = recalc),
-              "Venue dominance" = teamHist(score = score, startDate = startDate)
+              "Venue dominance" = teamHist(score = score)
   )
   
   return(p)

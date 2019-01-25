@@ -5,7 +5,7 @@
 #
 # map is basically only for limiting georgraphy of bars.
 #
-createMap <- function(score, lambda = 650, noTeam = NULL){
+createMap <- function(score, lambda = 650, noTeam = NULL, nx = 200){
   outList = list()
   
   calcMap <- function(x, y, x0, y0, S, lambda){
@@ -40,23 +40,24 @@ createMap <- function(score, lambda = 650, noTeam = NULL){
   # score = subset(score, score$lat>lims$ll.lat & score$lat<lims$ur.lat & score$lon>lims$ll.lon & score$lon<lims$ur.lon)
   
   # Make labels
-  users = dir("checkinHist/")
-  users = gsub("\\..*", "", users)
+  users = getUsers(team = T)
   team = proper(score$col)
   inds = which(names(score) %in% users)
   drinker = c()
   dTeam = c()
   num = c()
+  totBeer = c()
   for (i in 1:dim(score)[1]){ # Make better solution please
     drinker[i] = names(which.max(score[i,inds]))
     num[i] = max(score[i,inds])
     dTeam[i] = proper(getTeam(user = drinker[i]))
   }
-  
+  totBeer = rowSums(score[,users])
   
   label = paste0("<b> Venue: </b>", score$venue_name, " owned by team <b>", team,  "</b> <br/>",
                  "<b> Venue score is:  </b>", abs(score$val) , "<br/>",
-                 "<b> Greatest beer drinker: </b>", drinker, " from team <b>", dTeam, "</b> with ", num, " beers!"
+                 "<b> Greatest beer drinker: </b>", drinker, " from team <b>", dTeam, "</b> with ", num, " beers! <br/>",
+                 "<b> Beers consumed at venue: </b>", totBeer
   )
   vec = grep("Black", label)
   label[vec] = paste0("<b> Venue: </b>", score$venue_name[vec], " is not owned by any team! <b>Go drink some beers!</b> <br/>",
@@ -70,7 +71,6 @@ createMap <- function(score, lambda = 650, noTeam = NULL){
   }
   outList$score = score
   # make a map image
-  nx = 256
   dx = abs(min(score$lon)- max(score$lon))
   dy = abs(min(score$lat)- max(score$lat))
   #

@@ -2,8 +2,10 @@
 # 31-12-2018
 #
 # histogram of owned bars
+# 
+# 
 #
-teamHist <- function(score, startDate, isBar = F){
+teamHist <- function(score, isBar = F){
   xlab = 13
   delta = 5
   
@@ -21,6 +23,8 @@ teamHist <- function(score, startDate, isBar = F){
   
   p <- ggplot(score) + geom_bar(aes(x = cuts, fill = col), position = "dodge") +
     labs(x = "Venue Score", y = "Number of bars", title = "Histogram of venue scores", fill = "Team") + 
+    scale_fill_manual(values = c(Blue = "#619CFF",
+                                 Red =  "#F8766D")) +
     theme(
       axis.text.x = element_text(size = xlab),
       axis.text.y = element_text(size = xlab)

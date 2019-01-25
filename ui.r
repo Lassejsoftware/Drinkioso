@@ -72,10 +72,16 @@ dashboardPage(
               ),
               br(),
               fluidRow(
-                box(title = "Trophies", width = 10,
-                    div(title = "Here there will be stuff",
-                        style = 'overflow-x: scroll',
-                        h3("Some trophies")
+                box(title = "Trophies", width = 10, status = "primary", solidHeader = T, collapsible = T, # height = 150,
+                    div(title = "Your well deserved trophies",
+                        # style = 'overflow-y: scroll',
+                        style = 'overflow:hidden',
+                        h3("Some trophies"),
+                        # fluidRow(
+                        #   column(12,
+                                 img(src = "imagetest.gif")
+                        #          )
+                        # )
                         )
                     )
               ), 
@@ -143,14 +149,6 @@ dashboardPage(
                                        )
                                      ),
                                      box(title = "Venue related", width = 10),
-                                     box(title = "Trophy related", width = 10,
-                                         column(4,
-                                                uiOutput("trophies")
-                                                ),
-                                         column(2,
-                                                actionButton(inputId = "trophyRecalc", label = "Recalculate trophy")
-                                                )
-                                         ),
                                      box(title = "Scoring related", width = 10,
                                          column(4,
                                                 uiOutput("startDate")
