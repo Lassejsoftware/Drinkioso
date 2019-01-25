@@ -4,7 +4,7 @@
 # server side of drinkioso v0.1 
 #
 
-startDate = readRDS("extra/data/startDate.rds")
+# startDate = readRDS("extra/data/startDate.rds")
 
 function(input, output, session) {
   # Reactives for different features.
@@ -16,19 +16,19 @@ function(input, output, session) {
   #                         calc = 1,
   #                         map = cph
   #                         )
-  beerReact <- reactiveValues()
+  # beerReact <- reactiveValues()
   #### Welcome page ####
   
-  output$logo <- renderImage({
-    outfile = "www/drinkioso.png"
-    
-    # Return a list containing the filename
-    list(src = outfile,
-         contentType = 'image/png',
-         #width = 400,
-         #height = 300,
-         alt = "This is alternate text")
-  }, deleteFile = F)
+  # output$logo <- renderImage({
+  #   outfile = "www/drinkioso.png"
+  #   
+  #   # Return a list containing the filename
+  #   list(src = outfile,
+  #        contentType = 'image/png',
+  #        #width = 400,
+  #        #height = 300,
+  #        alt = "This is alternate text")
+  # }, deleteFile = F)
   
   #### map ####
   # observeEvent(c(input$calcMap, admin$calc),{
