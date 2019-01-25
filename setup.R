@@ -6,7 +6,7 @@
 .libPaths(c("/home/shiny/R_libs", .libPaths())) # libs on aws
 shinyOptions(cache = diskCache("./myapp-cache"))
 # Packages
-# library(shiny)
+library(shiny)
 library(tidyr)
 library(plyr)
 library(dplyr)
