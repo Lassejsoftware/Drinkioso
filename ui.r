@@ -3,7 +3,7 @@
 # 
 # Drinkioso v0.1
 #
-source("setup.R")
+# source("setup.R")
 #
 dashboardPage(
   #
