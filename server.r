@@ -8,14 +8,14 @@ startDate = readRDS("extra/data/startDate.rds")
 
 function(input, output, session) {
   # Reactives for different features.
-  admin <- reactiveValues(start = startDate, #as.POSIXct("01 jan 2018", format = "%d %b %Y"),
-                          score = makedfScore(
-                            startDate = startDate,
-                            # startDate = as.POSIXct("01 jan 2018", format = "%d %b %Y"),
-                            map = cph),
-                          calc = 1,
-                          map = cph
-                          )
+  # admin <- reactiveValues(start = startDate, #as.POSIXct("01 jan 2018", format = "%d %b %Y"),
+  #                         score = makedfScore(
+  #                           startDate = startDate,
+  #                           # startDate = as.POSIXct("01 jan 2018", format = "%d %b %Y"),
+  #                           map = cph),
+  #                         calc = 1,
+  #                         map = cph
+  #                         )
   beerReact <- reactiveValues()
   #### Welcome page ####
   

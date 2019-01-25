@@ -4,6 +4,7 @@
 # Drinkioso v0.1
 #
 # source("setup.R")
+library(shinydashboard)
 #
 dashboardPage(
   #
