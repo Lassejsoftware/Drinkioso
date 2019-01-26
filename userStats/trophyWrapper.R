@@ -3,7 +3,7 @@
 #
 # Wrapper for trophy calculations
 #
-trophyWrapper <- function(trophy = NULL, startDate, map, opts = NULL){
+trophyWrapper <- function(trophy = NULL, startDate, map, reCalc = F, opts = NULL){
   trophies = c("Columbus", "Warrior")
   if (!is.null(opts)){
     if (opts == "trophies"){

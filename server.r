@@ -350,10 +350,10 @@ function(input, output, session) {
     }
     
     # Recalc user stats
-    trophies = trophyWrapper(opts = "trophies")
-    for (i in trophies){
-      trophyWrapper(trophy = i, startDate = admin$start, map = admin$map, reCalc = T)
-    }
+    # trophies = trophyWrapper(opts = "trophies")
+    # for (i in trophies){
+    #   trophyWrapper(trophy = i, startDate = admin$start, map = admin$map, reCalc = T)
+    # }
     
     # Delete cache
     file.remove(dir("myapp-cache/",full.names = T))
