@@ -3,7 +3,7 @@
 # 
 # Drinkioso v0.1
 #
-setwd("/home/shiny/drinkioso")
+# setwd("/home/shiny/drinkioso")
 
 source("setup.R")
 library(shinydashboard)
@@ -13,8 +13,8 @@ dashboardPage(
   header = dashboardHeader(title = "Drinkioso"),
   sidebar = dashboardSidebar(
     sidebarMenu(
-      menuItem("Welcome page", tabName = "welcome", selected = T),
-      menuItem("Map", tabName = "map"),
+      menuItem("Welcome page", tabName = "welcome"),
+      menuItem("Map", tabName = "map", selected = T),
       menuItem("Users stats", tabName = "uStats"),
       menuItem("Team stats", tabName = "tStats"),
       menuItem("Venue stats", tabName = "vStats"),
@@ -27,8 +27,7 @@ dashboardPage(
       tabItem("welcome",
               fluidRow(
                 div(title = "test",
-                    # imageOutput("logo")
-                    textOutput("test")
+                   imageOutput("logo")
                     ) 
                 # box(title = "Rules",
                 #   h2("General rules"))
