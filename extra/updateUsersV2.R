@@ -7,12 +7,8 @@
 #
 .libPaths(c("/home/shiny/R_libs","c:/R_libs", .libPaths())) # libs on aws
 #
-if ("bleh"){
-  path = "C:/Users/jqmt/Desktop/jens/drinkioso/"
-}
+path = "/srv/shiny-server/drinkioso/"
 setwd(path)
-startDate = readRDS("extra/data/startDate.rds")
-cph <- readRDS("maps/cph.rds")
 #
 rm(list = ls())
 # functions
@@ -21,18 +17,18 @@ source("userHistoryV3.R")
 source("userStats/trophyWrapper.R")
 source("userStats/calcWarrior.R")
 source("userStats/calcColumbus.R")
+source("extra/getTeam.R")
+source("helperFunctions.R")
 #
 users = getUsers(team = T)
-users = subset(users, !(users %in% noUsers))
 #
 for (i in users){
   print(i)
   getUserHist(user = i, wTime = 60)
 }
 
-
 # Recalc user stats
-trophies = trophyWrapper(opts = "trophies")
-for (i in trophies){
-  trophyWrapper(trophy = i, startDate = startDate, map = , reCalc = T)
-}
+# trophies = trophyWrapper(opts = "trophies")
+# for (i in trophies){
+#   trophyWrapper(trophy = i, startDate = startDate, map = , reCalc = T)
+# }
