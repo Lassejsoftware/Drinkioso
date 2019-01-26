@@ -25,8 +25,9 @@ dashboardPage(
       tabItem("welcome",
               fluidRow(
                 div(title = "test",
-                    imageOutput("logo")
-                    )
+                    # imageOutput("logo")
+                    textOutput("test")
+                    ) 
                 # box(title = "Rules",
                 #   h2("General rules"))
               )

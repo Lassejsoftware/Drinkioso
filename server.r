@@ -7,6 +7,7 @@
 # startDate = readRDS("extra/data/startDate.rds")
 
 function(input, output, session) {
+  
   # Reactives for different features.
   # admin <- reactiveValues(start = startDate, #as.POSIXct("01 jan 2018", format = "%d %b %Y"),
   #                         score = makedfScore(
@@ -19,16 +20,21 @@ function(input, output, session) {
   # beerReact <- reactiveValues()
   #### Welcome page ####
   
-  # output$logo <- renderImage({
-  #   outfile = "www/drinkioso.png"
-  #   
-  #   # Return a list containing the filename
-  #   list(src = outfile,
-  #        contentType = 'image/png',
-  #        #width = 400,
-  #        #height = 300,
-  #        alt = "This is alternate text")
-  # }, deleteFile = F)
+  output$logo <- renderImage({
+    outfile = "www/drinkioso.png"
+
+    # Return a list containing the filename
+    list(src = outfile,
+         contentType = 'image/png',
+         #width = 400,
+         #height = 300,
+         alt = "This is alternate text")
+  }, deleteFile = F)
+  
+  output$test <- renderText({
+    
+    paste0(.libPaths(),"  ",getwd() )
+  })
   
   #### map ####
   # observeEvent(c(input$calcMap, admin$calc),{
