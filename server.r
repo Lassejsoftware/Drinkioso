@@ -11,11 +11,10 @@ function(input, output, session) {
   admin <- reactiveValues(start = startDate, #as.POSIXct("01 jan 2018", format = "%d %b %Y"),
                           score = makedfScore(
                             startDate = startDate,
-                            # startDate = as.POSIXct("01 jan 2018", format = "%d %b %Y"),
                             map = cph),
                           calc = 1,
                           map = cph
-                          )
+  )
   beerReact <- reactiveValues()
   #### Welcome page ####
   
@@ -319,11 +318,22 @@ function(input, output, session) {
     users <- getUsers()
     selectizeInput(inputId = "usersAdmin", label = "Choose a user to update or add new user",
                    choices = users,
-                   multiple = T,
+                   multiple = F,
                    options = list(
                      create = T, # Possible to create new user
                      persist = T # Not possible to choose the new option as a usual option
                    ))
+  })
+  
+  # User teams
+  output$userTeam <- renderUI({
+    req(input$usersAdmin)
+    if (length(input$usersAdmin)== 1){
+      radioButtons(inputId = "adminUserTeam", label = "Team",
+                   choices = c(getTeam(opts = "name"), "delete"),
+                   selected = proper(getTeam(user = input$usersAdmin))
+                   )
+    }
   })
   
   # Users drinking history
@@ -356,7 +366,7 @@ function(input, output, session) {
         )
         )
         withProgress(message = "Creating user in database", value = 1, {
-          getUserHist(user = i, wTime = 10)
+          getUserHist(user = i, wTime = 60)
         })
       }
     }
@@ -374,6 +384,34 @@ function(input, output, session) {
     admin$score = makedfScore(startDate = admin$start, map = admin$map)
   })
   
+  # Update user team
+  observeEvent(input$updateUserTeam, {
+    req(input$usersAdmin)
+    req(input$adminUserTeam)
+    users = getUsers()
+    if (input$usersAdmin %in% users){
+      teamList <- readRDS("../drinkiosoData/teamList.rds")
+      
+      # Delete user from current team
+      ind = grep(input$usersAdmin, teamList)
+      if (length(ind)){
+        temp = teamList[[ind]]
+        teamList[[ind]] = temp[temp != input$usersAdmin]
+      }
+      
+      # Update team
+      if (input$adminUserTeam != "delete"){
+        ind = which(tolower(input$adminUserTeam) == names(teamList))
+        teamList[[ind]] <- c(teamList[[ind]], input$usersAdmin)
+        saveRDS(teamList, "../drinkiosoData/teamList.rds")
+        print(teamList)
+      } else {
+        saveRDS(teamList, "../drinkiosoData/teamList.rds")
+        print(teamList)
+      }
+      admin$score <- makedfScore(startDate = startDate, map = cph)
+    }
+  })
   
   ## Scoring related
   output$startDate = renderUI({

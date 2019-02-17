@@ -38,8 +38,9 @@ dashboardPage(
                               actionButton(inputId = "calcMap", label = "Calculate map"),
                               br(),
                               checkboxGroupInput(inputId = "mapTeams", label = "Show teams on map",
-                                                 choices = proper(names(getTeam(opts="teams"))),
-                                                 selected = proper(names(getTeam(opts="teams"))))
+                                                 choices = getTeam(opts = "name"),
+                                                 selected = getTeam(opts = "name")
+                                                 )
                               ),
                        column(4,
                               numericInput(inputId = "mapAlpha", label = "Alpha value for the map",
@@ -149,9 +150,15 @@ dashboardPage(
                                                   uiOutput("userChoiceAdmin"),
                                                   br()
                                            ),
-                                           column(2,
+                                           column(3,
                                                   actionButton(inputId = "updateUsers", label = "Update user data")
-                                           )
+                                           ),
+                                           column(2,
+                                                  uiOutput("userTeam")
+                                                  ),
+                                           column(2,
+                                                  actionButton(inputId = "updateUserTeam", label = "Update user team")
+                                                  )
                                          ),
                                          fluidRow(
                                            column(12,

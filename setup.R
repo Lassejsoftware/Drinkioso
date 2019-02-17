@@ -51,3 +51,4 @@ source("venueStats/venueTimePlot.R")
 
 # Variables
 cph <<- readRDS("maps/cph.rds")
+# teamList <<- readRDS("../drinkiosoData/teamList.rds")
