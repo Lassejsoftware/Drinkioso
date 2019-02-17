@@ -326,6 +326,18 @@ function(input, output, session) {
                    ))
   })
   
+  # Users drinking history
+  output$userHistTab <- DT::renderDataTable({
+    req(input$usersAdmin)
+    if (length(input$usersAdmin)== 1){
+      users <- getUsers()
+      if (input$usersAdmin %in% users){
+        userDat = readRDS(paste0("../drinkiosoData/checkinHist/", input$usersAdmin, ".rds"))
+        datatable(userDat, rownames = F, options = list(pageLength = 10))
+      }
+    }
+  })
+  
   # Update user data
   observeEvent(input$updateUsers,{
     req(input$usersAdmin)

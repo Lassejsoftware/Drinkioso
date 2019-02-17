@@ -43,7 +43,7 @@ dashboardPage(
                               ),
                        column(4,
                               numericInput(inputId = "mapAlpha", label = "Alpha value for the map",
-                                           value = 0.3, min = 0, max = 1, step = 0.1)
+                                           value = 0.2, min = 0, max = 1, step = 0.1)
                               ),
                        column(5,
                               numericInput(inputId = "mapLambda", label = "Decay constant for smoothing function",
@@ -75,7 +75,7 @@ dashboardPage(
               ),
               br(),
               fluidRow(
-                box(title = "Trophies", width = 10, status = "primary", solidHeader = T, collapsible = T, # height = 150,
+                box(title = "Trophies", width = 10, status = "primary", solidHeader = T, collapsible = T, collapsed = T, # height = 150,
                     div(title = "Your well deserved trophies",
                         # style = 'overflow-y: scroll',
                         style = 'overflow:hidden',
@@ -143,13 +143,23 @@ dashboardPage(
                 fluidRow(
                   conditionalPanel("output.adminSwitch == true",
                                    fluidRow(
-                                     box(title = "User related", width = 10,
-                                       column(4,
-                                              uiOutput("userChoiceAdmin")
-                                       ),
-                                       column(2,
-                                              actionButton(inputId = "updateUsers", label = "Update user data")
-                                       )
+                                     box(title = "User related", width = 12,
+                                         fluidRow(
+                                           column(4,
+                                                  uiOutput("userChoiceAdmin"),
+                                                  br()
+                                           ),
+                                           column(2,
+                                                  actionButton(inputId = "updateUsers", label = "Update user data")
+                                           )
+                                         ),
+                                         fluidRow(
+                                           column(12,
+                                                  div(style = 'overflow-x: scroll',
+                                                      DT::dataTableOutput(outputId = "userHistTab")
+                                                  )
+                                                  )
+                                         )
                                      ),
                                      box(title = "Venue related", width = 10),
                                      box(title = "Scoring related", width = 10,

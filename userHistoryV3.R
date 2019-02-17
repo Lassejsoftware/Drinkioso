@@ -8,9 +8,6 @@
 getUserHist <- function(user = NULL, wTime = 2*60, overWrite = F){
   if (is.null(user)){print("Specify a user, dummy!");return(NULL)}
   
-  # library(jsonlite)
-  # library(plyr)
-  
   source("extra/config.R")
   source("extra/unpackCheckins.R")
   source("extra/untappdAPI.R")
