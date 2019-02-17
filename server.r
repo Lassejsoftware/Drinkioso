@@ -79,6 +79,9 @@ function(input, output, session) {
       Polygons(list(Polygon(cbind(CL[[i]]$x, CL[[i]]$y))), ID=i))
     spgons = SpatialPolygons(pgons)
     
+    # Get playing field limits
+    # lims = makedfVenue(map = admin$map, opts = "lims")
+    
     # With bars sommer::jet.colors
     const = 10
     leaflet(spgons) %>% addTiles() %>%
@@ -88,6 +91,8 @@ function(input, output, session) {
                  labelOptions = list(textsize = "15px")) %>% 
       addCircles(lng = beerList$score$lon, lat = beerList$score$lat,
                  radius = abs(beerList$score$val) + const, opacity = 1, col = "black", fill = F, weight = 3) 
+      # addRectangles(lng1 = lims$ll.lon, lat1 = lims$ll.lat, lng2 = lims$ur.lon, lat2 = lims$ur.lat,
+      #               fillOpacity = 0, color = "#000000", dashArray = "3")
     
   })
   
@@ -336,6 +341,24 @@ function(input, output, session) {
     }
   })
   
+  # User joinDate date
+  output$userJoin<- renderUI({
+    req(input$usersAdmin)
+    users <- getUsers()
+    if (input$usersAdmin %in% users){
+      user = readRDS(paste0("../drinkiosoData/users/", input$usersAdmin, ".rds"))
+      if (is.null(user$joinDate)){
+        user$joinDate <- startDate
+      }
+      sliderInput(inputId = "adminUserJoin",
+                  label = "Join date for user",
+                  min = startDate,
+                  max = as.POSIXct(Sys.Date()+5, format = "%Y-%b-%d"),
+                  value = user$joinDate,# as.POSIXct(user$joinDate, format = "%d %b %Y"),
+                  step = 14)
+    }
+  })
+  
   # Users drinking history
   output$userHistTab <- DT::renderDataTable({
     req(input$usersAdmin)
@@ -409,6 +432,26 @@ function(input, output, session) {
         saveRDS(teamList, "../drinkiosoData/teamList.rds")
         print(teamList)
       }
+      admin$score <- makedfScore(startDate = startDate, map = cph)
+    }
+  })
+  
+  # Update user join date
+  observeEvent(input$updateUserJoin, {
+    req(input$usersAdmin)
+    req(input$adminUserJoin)
+    users <- getUsers()
+    if (input$usersAdmin %in% users){
+      user = readRDS(paste0("../drinkiosoData/users/", input$usersAdmin, ".rds"))
+      if (is.null(user$joinDateBC)){
+        if (is.null(user$joinDate)){
+          user$joinDateBC <- startDate
+        } else {
+          user$joinDateBC <- user$joinDate
+        }
+      }
+      user$joinDate <- input$adminUserJoin
+      saveRDS(user, paste0("../drinkiosoData/users/", input$usersAdmin, ".rds"))
       admin$score <- makedfScore(startDate = startDate, map = cph)
     }
   })

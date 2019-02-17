@@ -1,9 +1,19 @@
 #
 # 10-09-2018
 #
-# Make a df with venue info. This is nothing but a draft.
+# Make a df with venue info. This is nothing but a draft. This is where we define the playing field.
 #
-makedfVenue <- function(map = NULL){
+makedfVenue <- function(map = NULL, opts = NULL){
+  if (!is.null(map)){
+    lims = attr(map,"bb")
+  }
+  
+  if (!is.null(opts)){
+    if (opts == "lims"){
+      return(lims)
+    }
+  }
+  
   venues = dir("../drinkiosoData/venues")
   dfVenue = data.frame()
   cc = 1
@@ -39,7 +49,6 @@ makedfVenue <- function(map = NULL){
   names(dfVenue)[names(dfVenue) == "lng"] = "lon" 
   if (!is.null(map)){
     # This only work for some cph map.
-    lims = attr(map,"bb")
     dfVenue = subset(dfVenue, dfVenue$lat>lims$ll.lat & dfVenue$lat<lims$ur.lat & dfVenue$lon>lims$ll.lon & dfVenue$lon<lims$ur.lon)
   }
   

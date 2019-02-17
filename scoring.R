@@ -67,6 +67,15 @@ makedfScore <- function(startDate = NULL, map = NULL, isBar = F, multi = T){
   # Add team colours
   score$col = getTeam(val = score$val)
   
+  if (!all(users %in% names(score))){
+    miss = users[!(users %in% names(score))]
+    for (i in miss){
+      df = data.frame(temp = rep(0,nrow(score)))
+      names(df) <- i
+      score = cbind(score, df)
+    }
+  }
+  
   return(score)
 }
 

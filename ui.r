@@ -154,10 +154,14 @@ dashboardPage(
                                                   actionButton(inputId = "updateUsers", label = "Update user data")
                                            ),
                                            column(2,
-                                                  uiOutput("userTeam")
+                                                  uiOutput("userTeam"),
+                                                  uiOutput("userJoin")
                                                   ),
                                            column(2,
-                                                  actionButton(inputId = "updateUserTeam", label = "Update user team")
+                                                  actionButton(inputId = "updateUserTeam", label = "Update user team"),
+                                                  br(),
+                                                  br(),
+                                                  actionButton(inputId = "updateUserJoin", label = "Update user join date")
                                                   )
                                          ),
                                          fluidRow(
